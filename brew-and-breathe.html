@@ -6,10 +6,9 @@
 <title>Brew & Breathe — WhimsiTea</title>
 <meta property="og:title" content="Brew & Breathe — A WhimsiTea Ritual">
 <meta property="og:description" content="A five-act ritual for returning to yourself. Set your intention. Brew your tea. Breathe. Find the magic.">
-<meta property="og:image" content="https://tdshang.github.io/feralteacup/brew-breathe-preview.png">
+<meta property="og:image" content="https://feraldamagereport.netlify.app/tabstrope.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:url" content="https://tdshang.github.io/feralteacup/brew-and-breathe.html">
 <meta name="twitter:card" content="summary_large_image">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
@@ -69,7 +68,7 @@ body{
 }
 
 /* ── Intention grid ── */
-.intention-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}.intention-grid .intention-card:last-child:nth-child(odd){grid-column:1 / -1;max-width:50%;margin:0 auto;width:100%;}
+.intention-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
 .intention-card{
   background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
   border-radius:14px;padding:18px 14px;text-align:center;cursor:pointer;
@@ -210,29 +209,13 @@ body{
 .share-btn:hover{background:rgba(255,255,255,.1);}
 
 
-/* Seal button */
-.btn-seal{
-  width:100%;margin-top:12px;padding:12px;
-  background:linear-gradient(135deg,rgba(106,74,138,.25),rgba(106,74,138,.08));
-  border:1px solid rgba(106,74,138,.5);border-radius:50px;
-  font-family:Cinzel,serif;font-size:13px;letter-spacing:.07em;
-  color:var(--accent-mid);cursor:pointer;transition:all .25s;
-}
+.btn-seal{width:100%;margin-top:12px;padding:12px;background:linear-gradient(135deg,rgba(106,74,138,.25),rgba(106,74,138,.08));border:1px solid rgba(106,74,138,.5);border-radius:50px;font-family:Cinzel,serif;font-size:13px;letter-spacing:.07em;color:var(--accent-mid);cursor:pointer;transition:all .25s;}
 .btn-seal:hover{background:linear-gradient(135deg,rgba(106,74,138,.4),rgba(106,74,138,.15));}
 .btn-seal:disabled{opacity:.3;cursor:not-allowed;}
-.seal-canvas-wrap{margin-top:14px;position:relative;}
+.seal-canvas-wrap{margin-top:14px;}
 #seal-canvas{width:100%;height:auto;border-radius:8px;}
-.seal-complete{
-  text-align:center;font-family:Cinzel,serif;font-size:13px;
-  letter-spacing:.1em;color:var(--gold-light);
-  margin-top:10px;transition:opacity 1.5s ease;
-}
-/* Wonder fact */
-.wonder-fact-text{
-  font-family:Playfair Display,serif;font-size:16px;font-style:italic;
-  color:var(--parchment);line-height:1.75;opacity:0;
-  transition:opacity 1.5s ease;
-}
+.seal-complete{text-align:center;font-family:Cinzel,serif;font-size:13px;letter-spacing:.1em;color:var(--gold-light);margin-top:10px;transition:opacity 1.5s ease;}
+.wonder-fact-text{font-family:Playfair Display,serif;font-size:16px;font-style:italic;color:var(--parchment);line-height:1.75;opacity:0;transition:opacity 1.5s ease;}
 .wonder-fact-text.visible{opacity:1;}
 
 .page-footer{text-align:center;font-size:11px;color:var(--parchment);opacity:.2;padding-top:24px;border-top:1px solid rgba(255,255,255,.06);}
@@ -309,7 +292,7 @@ body{
 
   <div class="glass">
     <p style="font-size:13px;opacity:.6;text-align:center;margin-bottom:14px;font-style:italic;">Choose your steep time</p>
-    <div class="steep-options" id="steep-options">
+    <div class="steep-options">
       <div class="steep-btn" onclick="setSteep(2,this)">2 min<br><span style="font-size:10px;opacity:.6;">delicate</span></div>
       <div class="steep-btn" onclick="setSteep(3,this)">3 min<br><span style="font-size:10px;opacity:.6;">classic</span></div>
       <div class="steep-btn" onclick="setSteep(5,this)">5 min<br><span style="font-size:10px;opacity:.6;">deep</span></div>
@@ -419,7 +402,7 @@ body{
     <div class="closing-title">You have arrived.</div>
     <div class="closing-text" id="closing-text">—</div>
     <a href="https://whimsitea.com" target="_blank" class="btn-shop">✦ &nbsp; Visit WhimsiTea &nbsp; ✦</a>
-    <a href="https://www.facebook.com/groups/whimsitea" target="_blank" class="btn-community">✦ &nbsp; Share your magic in the community &nbsp; ✦</a>
+    <button onclick="shareToCommunity()" class="btn-community" style="width:100%;cursor:pointer;text-align:center;border:none;">✦ &nbsp; Share your magic in the community &nbsp; ✦</button>
     <button class="share-btn" onclick="shareRitual()">✦ &nbsp; Copy to share &nbsp; ✦</button>
   </div>
 
@@ -430,6 +413,24 @@ body{
 </div>
 
 <script>
+
+function shareToCommunity(){
+  if(!selectedIntention) return;
+  const text = buildShareText();
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.querySelector('.btn-community');
+    const orig = btn.textContent;
+    btn.textContent = 'Copied! Opening group...';
+    setTimeout(()=>{ window.open('https://www.facebook.com/groups/whimsitea','_blank'); btn.textContent=orig; }, 1200);
+  }).catch(()=>{ window.open('https://www.facebook.com/groups/whimsitea','_blank'); });
+}
+
+function buildShareText(){
+  if(!selectedIntention) return '';
+  return 'I just completed a Brew & Breathe ritual with WhimsiTea. ' + String.fromCodePoint(0x2728) + '\n\nMy intention: ' + selectedIntention.label + ' ' + selectedIntention.emoji + '\nMy brew: ' + selectedIntention.recipe.name + '\n\nAffirmation: "' + selectedIntention.affirmation + '"\n\nFind your ritual at tdshang.github.io/feralteacup/brew-and-breathe.html\n\u2014 WhimsiTea ' + String.fromCodePoint(0x1FAD6);
+}
+
+
 const INTENTIONS = [
   {
     id: 'rest',
@@ -1456,6 +1457,7 @@ function initStars(){
   draw();
   window.addEventListener('resize',()=>{ canvas.width=window.innerWidth; canvas.height=window.innerHeight; });
 }
+
 
 </script>
 </body>
