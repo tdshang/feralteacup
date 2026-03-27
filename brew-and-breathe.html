@@ -209,6 +209,32 @@ body{
 }
 .share-btn:hover{background:rgba(255,255,255,.1);}
 
+
+/* Seal button */
+.btn-seal{
+  width:100%;margin-top:12px;padding:12px;
+  background:linear-gradient(135deg,rgba(106,74,138,.25),rgba(106,74,138,.08));
+  border:1px solid rgba(106,74,138,.5);border-radius:50px;
+  font-family:Cinzel,serif;font-size:13px;letter-spacing:.07em;
+  color:var(--accent-mid);cursor:pointer;transition:all .25s;
+}
+.btn-seal:hover{background:linear-gradient(135deg,rgba(106,74,138,.4),rgba(106,74,138,.15));}
+.btn-seal:disabled{opacity:.3;cursor:not-allowed;}
+.seal-canvas-wrap{margin-top:14px;position:relative;}
+#seal-canvas{width:100%;height:auto;border-radius:8px;}
+.seal-complete{
+  text-align:center;font-family:Cinzel,serif;font-size:13px;
+  letter-spacing:.1em;color:var(--gold-light);
+  margin-top:10px;transition:opacity 1.5s ease;
+}
+/* Wonder fact */
+.wonder-fact-text{
+  font-family:Playfair Display,serif;font-size:16px;font-style:italic;
+  color:var(--parchment);line-height:1.75;opacity:0;
+  transition:opacity 1.5s ease;
+}
+.wonder-fact-text.visible{opacity:1;}
+
 .page-footer{text-align:center;font-size:11px;color:var(--parchment);opacity:.2;padding-top:24px;border-top:1px solid rgba(255,255,255,.06);}
 
 /* Sound toggle */
@@ -242,7 +268,7 @@ body{
   <div class="brand-mark">✦ WhimsiTea ✦</div>
   <h1 class="site-title">Brew <em>&</em> Breathe</h1>
   <div class="gold-divider"><span>✦</span></div>
-  <p class="site-sub">A five-act ritual for returning to yourself.<br>Five minutes. One cup. One breath at a time.</p>
+  <p class="site-sub" id="time-greeting">A five-act ritual for returning to yourself.<br>Five minutes. One cup. One breath at a time.</p>
 </header>
 
 <!-- Progress -->
@@ -377,9 +403,18 @@ body{
   <div class="glass reflection-wrap">
     <div class="reflection-label">✦ A Question to Carry</div>
     <div class="reflection-q" id="reflection-q">What small beautiful thing did you notice in this moment that you almost missed?</div>
-    <textarea class="reflection-input" placeholder="Write here if you wish... or let the question simply breathe with you."></textarea>
+    <textarea class="reflection-input" id="magic-input" placeholder="Write here if you wish... or let the question simply breathe with you."></textarea>
+    <button class="btn-seal" id="btn-seal" onclick="sealMagic()">✦ &nbsp; Seal Your Magic &nbsp; ✦</button>
+    <div class="seal-canvas-wrap" id="seal-canvas-wrap" style="display:none;">
+      <canvas id="seal-canvas" width="400" height="120"></canvas>
+      <div class="seal-complete" id="seal-complete" style="opacity:0;">Your magic has been seen. ✦</div>
+    </div>
   </div>
 
+  <div class="wonder-fact-wrap glass" id="wonder-fact-wrap" style="margin-bottom:16px;text-align:center;">
+    <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(232,200,74,.6);margin-bottom:12px;">✦ A Wonder From the World</div>
+    <div class="wonder-fact-text" id="wonder-fact-text"></div>
+  </div>
   <div class="closing-center">
     <div class="closing-title">You have arrived.</div>
     <div class="closing-text" id="closing-text">—</div>
@@ -534,7 +569,7 @@ const INTENTIONS = [
   {
     id: 'release',
     label: 'Release',
-    emoji: '🌙',
+    emoji: '🍃',
     desc: 'I need to let something go.',
     color: '#2a2a6a',
     colorLight: '#e8e8f8',
@@ -664,95 +699,274 @@ function setGlow(color){
 
 // ── SVG shapes (breathing) ──
 const SHAPES = {
-  cat: `<g id="breath-shape">
-    <ellipse cx="110" cy="110" rx="55" ry="42" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.8"/>
-    <ellipse cx="85" cy="75" rx="16" ry="20" fill="none" stroke="currentColor" stroke-width="2" opacity="0.7"/>
-    <ellipse cx="135" cy="75" rx="16" ry="20" fill="none" stroke="currentColor" stroke-width="2" opacity="0.7"/>
-    <polygon points="85,60 78,42 92,55" fill="currentColor" opacity="0.5"/>
-    <polygon points="135,60 128,42 142,55" fill="currentColor" opacity="0.5"/>
-    <circle cx="98" cy="100" r="3" fill="currentColor" opacity="0.6"/>
-    <circle cx="122" cy="100" r="3" fill="currentColor" opacity="0.6"/>
-    <ellipse cx="110" cy="107" rx="5" ry="3.5" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
-    <path d="M 88 110 Q 80 108 75 112" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.5" stroke-linecap="round"/>
-    <path d="M 88 115 Q 79 114 74 118" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.5" stroke-linecap="round"/>
-    <path d="M 132 110 Q 140 108 145 112" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.5" stroke-linecap="round"/>
-    <path d="M 132 115 Q 141 114 146 118" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.5" stroke-linecap="round"/>
-    <path d="M 100 145 Q 110 155 120 145" stroke="currentColor" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
-  </g>`,
-  butterfly: `<g id="breath-shape">
-    <path d="M 110 110 Q 60 60 40 90 Q 20 120 70 130 Q 95 135 110 110 Z" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.8"/>
-    <path d="M 110 110 Q 160 60 180 90 Q 200 120 150 130 Q 125 135 110 110 Z" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.8"/>
-    <path d="M 110 110 Q 75 120 65 145 Q 60 165 90 155 Q 105 148 110 125 Z" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
-    <path d="M 110 110 Q 145 120 155 145 Q 160 165 130 155 Q 115 148 110 125 Z" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
-    <ellipse cx="110" cy="108" rx="4" ry="18" fill="currentColor" opacity="0.5"/>
-    <path d="M 108 90 Q 104 80 100 75" stroke="currentColor" stroke-width="2" fill="none" opacity="0.5" stroke-linecap="round"/>
-    <path d="M 112 90 Q 116 80 120 75" stroke="currentColor" stroke-width="2" fill="none" opacity="0.5" stroke-linecap="round"/>
-  </g>`,
-  dragon: `<g id="breath-shape">
-    <path d="M 110 140 Q 70 130 55 100 Q 40 70 60 55 Q 80 40 95 55 Q 105 65 110 80 Q 115 65 125 55 Q 140 40 160 55 Q 180 70 165 100 Q 150 130 110 140 Z" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.8"/>
-    <path d="M 75 55 Q 72 38 68 28" stroke="currentColor" stroke-width="3" fill="none" opacity="0.7" stroke-linecap="round"/>
-    <path d="M 90 48 Q 90 30 88 20" stroke="currentColor" stroke-width="3" fill="none" opacity="0.7" stroke-linecap="round"/>
-    <path d="M 130 48 Q 130 30 132 20" stroke="currentColor" stroke-width="3" fill="none" opacity="0.7" stroke-linecap="round"/>
-    <path d="M 145 55 Q 148 38 152 28" stroke="currentColor" stroke-width="3" fill="none" opacity="0.7" stroke-linecap="round"/>
-    <path d="M 60 80 Q 35 75 28 90" stroke="currentColor" stroke-width="2.5" fill="none" opacity="0.6" stroke-linecap="round"/>
-    <path d="M 160 80 Q 185 75 192 90" stroke="currentColor" stroke-width="2.5" fill="none" opacity="0.6" stroke-linecap="round"/>
-    <circle cx="95" cy="72" r="4" fill="currentColor" opacity="0.6"/>
-    <circle cx="125" cy="72" r="4" fill="currentColor" opacity="0.6"/>
-    <path d="M 100 90 Q 110 97 120 90" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.5" stroke-linecap="round"/>
-  </g>`,
-  star: `<g id="breath-shape">
-    <polygon points="110,40 120,85 165,85 130,110 142,155 110,132 78,155 90,110 55,85 100,85" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.8"/>
-    <polygon points="110,65 115,88 138,88 120,101 126,124 110,112 94,124 100,101 82,88 105,88" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
-  </g>`,
-  flower: `<g id="breath-shape">
-    <ellipse cx="110" cy="70" rx="16" ry="26" fill="none" stroke="currentColor" stroke-width="2" opacity="0.7"/>
-    <ellipse cx="110" cy="150" rx="16" ry="26" fill="none" stroke="currentColor" stroke-width="2" opacity="0.7"/>
-    <ellipse cx="70" cy="110" rx="26" ry="16" fill="none" stroke="currentColor" stroke-width="2" opacity="0.7"/>
-    <ellipse cx="150" cy="110" rx="26" ry="16" fill="none" stroke="currentColor" stroke-width="2" opacity="0.7"/>
-    <ellipse cx="82" cy="82" rx="16" ry="26" transform="rotate(45 82 82)" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
-    <ellipse cx="138" cy="82" rx="16" ry="26" transform="rotate(-45 138 82)" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
-    <ellipse cx="82" cy="138" rx="16" ry="26" transform="rotate(-45 82 138)" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
-    <ellipse cx="138" cy="138" rx="16" ry="26" transform="rotate(45 138 138)" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
-    <circle cx="110" cy="110" r="18" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.9"/>
-    <circle cx="110" cy="110" r="8" fill="currentColor" opacity="0.3"/>
-  </g>`,
-  moon: `<g id="breath-shape">
-    <path d="M 130 55 Q 80 65 75 110 Q 70 155 120 165 Q 85 160 75 130 Q 60 90 90 60 Q 105 48 130 55 Z" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.8"/>
-    <circle cx="145" cy="70" r="3" fill="currentColor" opacity="0.5"/>
-    <circle cx="158" cy="95" r="2" fill="currentColor" opacity="0.4"/>
-    <circle cx="152" cy="120" r="2.5" fill="currentColor" opacity="0.4"/>
-    <circle cx="130" cy="145" r="2" fill="currentColor" opacity="0.35"/>
-    <path d="M 85 80 Q 90 78 95 82" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.4" stroke-linecap="round"/>
-    <path d="M 82 100 Q 88 97 94 102" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.35" stroke-linecap="round"/>
-  </g>`,
-  dragonfly: `<g id="breath-shape">
-    <ellipse cx="110" cy="110" rx="8" ry="40" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.8"/>
-    <ellipse cx="110" cy="85" rx="6" ry="12" fill="none" stroke="currentColor" stroke-width="2" opacity="0.7"/>
-    <path d="M 110 80 Q 60 55 45 75 Q 35 95 75 105 Q 95 110 110 105 Z" fill="none" stroke="currentColor" stroke-width="2" opacity="0.75"/>
-    <path d="M 110 80 Q 160 55 175 75 Q 185 95 145 105 Q 125 110 110 105 Z" fill="none" stroke="currentColor" stroke-width="2" opacity="0.75"/>
-    <path d="M 110 100 Q 60 105 48 125 Q 42 145 80 140 Q 98 137 110 125 Z" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.65"/>
-    <path d="M 110 100 Q 160 105 172 125 Q 178 145 140 140 Q 122 137 110 125 Z" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.65"/>
-    <circle cx="110" cy="72" r="5" fill="currentColor" opacity="0.5"/>
-    <circle cx="105" cy="68" r="2.5" fill="currentColor" opacity="0.4"/>
-    <circle cx="115" cy="68" r="2.5" fill="currentColor" opacity="0.4"/>
-  </g>`
+
+  // REST — soft concentric water ripples, organic and expanding
+  cat: `<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;filter:drop-shadow(0 0 18px currentColor);">
+    <circle cx="110" cy="110" r="18" fill="currentColor" opacity="0.35"/>
+    <circle cx="110" cy="110" r="32" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.7"/>
+    <circle cx="110" cy="110" r="48" fill="none" stroke="currentColor" stroke-width="2" opacity="0.55"/>
+    <circle cx="110" cy="110" r="65" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.4"/>
+    <circle cx="110" cy="110" r="83" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.28"/>
+    <circle cx="110" cy="110" r="100" fill="none" stroke="currentColor" stroke-width="1" opacity="0.15"/>
+    <path d="M 110 28 Q 118 68 110 110 Q 102 68 110 28" fill="currentColor" opacity="0.12"/>
+    <path d="M 28 110 Q 68 102 110 110 Q 68 118 28 110" fill="currentColor" opacity="0.12"/>
+    <path d="M 192 110 Q 152 118 110 110 Q 152 102 192 110" fill="currentColor" opacity="0.12"/>
+    <path d="M 110 192 Q 102 152 110 110 Q 118 152 110 192" fill="currentColor" opacity="0.12"/>
+  </svg>`,
+
+  // JOY — radiating sunburst, geometric petals blooming
+  butterfly: `<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;filter:drop-shadow(0 0 18px currentColor);">
+    <circle cx="110" cy="110" r="22" fill="currentColor" opacity="0.4"/>
+    <circle cx="110" cy="110" r="14" fill="currentColor" opacity="0.6"/>
+    ${Array.from({length:12},(_,i)=>{
+      const a=i*(Math.PI*2/12);
+      const x1=110+35*Math.cos(a), y1=110+35*Math.sin(a);
+      const x2=110+72*Math.cos(a), y2=110+72*Math.sin(a);
+      const cx1=110+52*Math.cos(a-0.25), cy1=110+52*Math.sin(a-0.25);
+      const cx2=110+52*Math.cos(a+0.25), cy2=110+52*Math.sin(a+0.25);
+      const op=i%2===0?0.75:0.5;
+      const w=i%2===0?18:11;
+      return `<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} Q ${cx1.toFixed(1)} ${cy1.toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)} Q ${cx2.toFixed(1)} ${cy2.toFixed(1)} ${x1.toFixed(1)} ${y1.toFixed(1)}" fill="currentColor" opacity="${op}"/>`;
+    }).join('')}
+    <circle cx="110" cy="110" r="36" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+    <circle cx="110" cy="110" r="75" fill="none" stroke="currentColor" stroke-width="1" opacity="0.18"/>
+  </svg>`,
+
+  // COURAGE — bold geometric mandala
+  dragon: `<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;filter:drop-shadow(0 0 18px currentColor);">
+    <polygon points="110,18 124,90 196,76 140,128 164,198 110,154 56,198 80,128 24,76 96,90" fill="currentColor" opacity="0.12" stroke="currentColor" stroke-width="2" opacity="0.8"/>
+    <polygon points="110,42 120,90 168,82 132,114 148,162 110,138 72,162 88,114 52,82 100,90" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
+    <polygon points="110,58 117,88 148,83 126,104 135,135 110,118 85,135 94,104 72,83 103,88" fill="currentColor" opacity="0.15" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="110" cy="110" r="26" fill="currentColor" opacity="0.25" stroke="currentColor" stroke-width="2" opacity="0.7"/>
+    <circle cx="110" cy="110" r="14" fill="currentColor" opacity="0.45"/>
+    <circle cx="110" cy="110" r="6" fill="currentColor" opacity="0.7"/>
+    <line x1="110" y1="18" x2="110" y2="42" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+    <line x1="110" y1="178" x2="110" y2="202" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+    <line x1="18" y1="110" x2="42" y2="110" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+    <line x1="178" y1="110" x2="202" y2="110" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+  </svg>`,
+
+  // CLARITY — precise six-pointed snowflake
+  star: `<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;filter:drop-shadow(0 0 18px currentColor);">
+    ${Array.from({length:6},(_,i)=>{
+      const a=i*(Math.PI/3)-(Math.PI/2);
+      const x2=110+96*Math.cos(a), y2=110+96*Math.sin(a);
+      const bx1=110+60*Math.cos(a-0.45), by1=110+60*Math.sin(a-0.45);
+      const bx2=110+60*Math.cos(a+0.45), by2=110+60*Math.sin(a+0.45);
+      const mx=110+50*Math.cos(a), my=110+50*Math.sin(a);
+      const lx1=110+38*Math.cos(a-Math.PI/6), ly1=110+38*Math.sin(a-Math.PI/6);
+      const lx2=110+38*Math.cos(a+Math.PI/6), ly2=110+38*Math.sin(a+Math.PI/6);
+      return `<line x1="110" y1="110" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="currentColor" stroke-width="2.2" opacity="0.8"/>
+      <line x1="${bx1.toFixed(1)}" y1="${by1.toFixed(1)}" x2="${bx2.toFixed(1)}" y2="${by2.toFixed(1)}" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
+      <line x1="${mx.toFixed(1)}" y1="${my.toFixed(1)}" x2="${lx1.toFixed(1)}" y2="${ly1.toFixed(1)}" stroke="currentColor" stroke-width="1.5" opacity="0.45"/>
+      <line x1="${mx.toFixed(1)}" y1="${my.toFixed(1)}" x2="${lx2.toFixed(1)}" y2="${ly2.toFixed(1)}" stroke="currentColor" stroke-width="1.5" opacity="0.45"/>
+      <circle cx="${x2.toFixed(1)}" cy="${y2.toFixed(1)}" r="4" fill="currentColor" opacity="0.6"/>`;
+    }).join('')}
+    <circle cx="110" cy="110" r="60" fill="none" stroke="currentColor" stroke-width="1" opacity="0.2"/>
+    <circle cx="110" cy="110" r="36" fill="none" stroke="currentColor" stroke-width="1" opacity="0.25"/>
+    <circle cx="110" cy="110" r="16" fill="currentColor" opacity="0.3"/>
+    <circle cx="110" cy="110" r="7" fill="currentColor" opacity="0.6"/>
+  </svg>`,
+
+  // GRATITUDE — unfolding lotus
+  flower: `<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;filter:drop-shadow(0 0 18px currentColor);">
+    ${Array.from({length:8},(_,i)=>{
+      const a=i*(Math.PI*2/8)-(Math.PI/2);
+      const tip_x=110+82*Math.cos(a), tip_y=110+82*Math.sin(a);
+      const cl_x=110+55*Math.cos(a-0.55), cl_y=110+55*Math.sin(a-0.55);
+      const cr_x=110+55*Math.cos(a+0.55), cr_y=110+55*Math.sin(a+0.55);
+      const base_x=110+28*Math.cos(a+Math.PI), base_y=110+28*Math.sin(a+Math.PI);
+      const op=i%2===0?0.65:0.45;
+      return `<path d="M ${base_x.toFixed(1)} ${base_y.toFixed(1)} Q ${cl_x.toFixed(1)} ${cl_y.toFixed(1)} ${tip_x.toFixed(1)} ${tip_y.toFixed(1)} Q ${cr_x.toFixed(1)} ${cr_y.toFixed(1)} ${base_x.toFixed(1)} ${base_y.toFixed(1)} Z" fill="currentColor" opacity="${op}" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>`;
+    }).join('')}
+    <circle cx="110" cy="110" r="30" fill="currentColor" opacity="0.3" stroke="currentColor" stroke-width="2" opacity="0.7"/>
+    <circle cx="110" cy="110" r="18" fill="currentColor" opacity="0.5"/>
+    <circle cx="110" cy="110" r="8" fill="currentColor" opacity="0.75"/>
+  </svg>`,
+
+  // RELEASE — open outward spiral, flowing and unwinding
+  moon: `<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;filter:drop-shadow(0 0 18px currentColor);">
+    <path d="M 110 110
+      Q 110 95 118 88 Q 130 78 142 88 Q 155 100 148 116
+      Q 140 135 122 142 Q 98 150 80 138
+      Q 58 124 60 100 Q 62 72 85 58
+      Q 112 42 140 50 Q 170 60 178 90
+      Q 188 125 170 152 Q 148 182 115 188
+      Q 78 194 52 172 Q 22 148 20 112
+      Q 18 72 45 48 Q 75 22 115 20"
+      fill="none" stroke="currentColor" stroke-width="3" opacity="0.85" stroke-linecap="round"/>
+    <path d="M 110 110
+      Q 112 100 118 96 Q 126 90 134 96 Q 142 104 136 114
+      Q 129 126 118 129 Q 104 133 94 124
+      Q 82 114 86 100 Q 91 84 106 78"
+      fill="none" stroke="currentColor" stroke-width="2.2" opacity="0.6" stroke-linecap="round"/>
+    <circle cx="110" cy="110" r="8" fill="currentColor" opacity="0.5"/>
+    <circle cx="110" cy="110" r="3" fill="currentColor" opacity="0.8"/>
+    <circle cx="115" cy="20" r="5" fill="currentColor" opacity="0.4"/>
+    <circle cx="118" cy="12" r="3" fill="currentColor" opacity="0.3"/>
+  </svg>`,
+
+  // WONDER — flowing lemniscate infinity curves
+  dragonfly: `<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;filter:drop-shadow(0 0 18px currentColor);">
+    <path d="M 110 110 C 110 60 175 40 185 75 C 195 110 155 130 110 110 C 65 90 25 110 35 145 C 45 180 110 160 110 110" fill="none" stroke="currentColor" stroke-width="3" opacity="0.85" stroke-linecap="round"/>
+    <path d="M 110 110 C 110 60 45 40 35 75 C 25 110 65 130 110 110 C 155 90 195 110 185 145 C 175 180 110 160 110 110" fill="none" stroke="currentColor" stroke-width="3" opacity="0.85" stroke-linecap="round"/>
+    <path d="M 110 110 C 110 75 158 62 165 85 C 172 108 145 122 110 110 C 75 98 48 112 55 135 C 62 158 110 145 110 110" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.45" stroke-linecap="round"/>
+    <path d="M 110 110 C 110 75 62 62 55 85 C 48 108 75 122 110 110 C 145 98 172 112 165 135 C 158 158 110 145 110 110" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.45" stroke-linecap="round"/>
+    <circle cx="110" cy="110" r="10" fill="currentColor" opacity="0.4"/>
+    <circle cx="110" cy="110" r="5" fill="currentColor" opacity="0.65"/>
+    <circle cx="185" cy="75" r="4" fill="currentColor" opacity="0.35"/>
+    <circle cx="35" cy="75" r="4" fill="currentColor" opacity="0.35"/>
+    <circle cx="185" cy="145" r="4" fill="currentColor" opacity="0.35"/>
+    <circle cx="35" cy="145" r="4" fill="currentColor" opacity="0.35"/>
+  </svg>`
 };
+
+
 
 function renderShape(shapeKey, color){
   const wrap = document.getElementById('breath-shape-wrap');
-  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-  svg.setAttribute('viewBox','0 0 220 220');
-  svg.style.cssText = `position:absolute;inset:0;width:100%;height:100%;color:${color};filter:drop-shadow(0 0 12px ${color}80);transition:transform 0.3s ease;`;
-  svg.innerHTML = SHAPES[shapeKey] || SHAPES.star;
+  const shapeHTML = SHAPES[shapeKey] || SHAPES.star;
+  // Shapes now include their own SVG — inject directly
+  const container = document.createElement('div');
+  container.style.cssText = `position:absolute;inset:0;width:100%;height:100%;color:${color};transition:transform 0.4s ease;`;
+  container.innerHTML = shapeHTML;
   wrap.innerHTML = '';
-  wrap.appendChild(svg);
-  currentShape = svg;
+  wrap.appendChild(container);
+  currentShape = container;
 }
 
 function animateShape(scale, duration){
   if(!currentShape) return;
-  currentShape.style.transition = `transform ${duration}ms ease`;
-  currentShape.style.transform = `scale(${scale})`;
+  const phase = breathPhaseIdx;
+  const id = selectedIntention ? selectedIntention.id : 'rest';
+  applyShapeAnimation(id, phase, scale, duration);
+}
+
+function applyShapeAnimation(id, phase, scale, duration){
+  if(!currentShape) return;
+  const t = `${duration}ms`;
+  const easeIn  = `${duration}ms cubic-bezier(0.4,0,0.6,1)`;
+  const easeOut = `${duration}ms cubic-bezier(0.0,0,0.2,1)`;
+  const ease    = `${duration}ms ease`;
+
+  // phase: 0=inhale, 1=hold-in, 2=exhale, 3=hold-out
+  const isIn    = phase === 0;
+  const isHoldIn = phase === 1;
+  const isOut   = phase === 2;
+  const isHoldOut = phase === 3;
+
+  const svg = currentShape.querySelector('svg');
+
+  switch(id){
+    case 'rest': {
+      // Ripples pulse outward on inhale, settle on exhale
+      const circles = currentShape.querySelectorAll('circle, path');
+      circles.forEach((el, i) => {
+        el.style.transition = `opacity ${ease}, transform ${ease}`;
+        el.style.transformOrigin = '110px 110px';
+        if(isIn){
+          const delay = i * 80;
+          el.style.transitionDelay = delay + 'ms';
+          el.style.transform = `scale(${1 + i * 0.04})`;
+          el.style.opacity = parseFloat(el.getAttribute('opacity')||'0.5') * 1.3;
+        } else if(isOut || isHoldOut){
+          el.style.transitionDelay = '0ms';
+          el.style.transform = 'scale(1)';
+          el.style.opacity = el.getAttribute('opacity') || '0.5';
+        }
+      });
+      if(svg){ svg.style.transition = `transform ${ease}`; svg.style.transform = isIn ? 'scale(1.12)' : 'scale(1)'; }
+      break;
+    }
+    case 'joy': {
+      // Petals rotate AND bloom on inhale
+      if(svg){
+        svg.style.transition = `transform ${easeIn}`;
+        if(isIn)        svg.style.transform = 'scale(1.15) rotate(15deg)';
+        else if(isHoldIn) svg.style.transform = 'scale(1.15) rotate(15deg)';
+        else if(isOut)  svg.style.transform = 'scale(0.9) rotate(-5deg)';
+        else            svg.style.transform = 'scale(0.9) rotate(-5deg)';
+      }
+      break;
+    }
+    case 'courage': {
+      // Outer polygon rotates on inhale, counter-rotates on exhale
+      const polys = currentShape.querySelectorAll('polygon');
+      polys.forEach((p, i) => {
+        p.style.transition = `transform ${ease}`;
+        p.style.transformOrigin = '110px 110px';
+        const dir = i % 2 === 0 ? 1 : -1;
+        if(isIn || isHoldIn)        p.style.transform = `rotate(${dir * 12}deg) scale(1.08)`;
+        else if(isOut || isHoldOut) p.style.transform = `rotate(${dir * -4}deg) scale(0.95)`;
+      });
+      if(svg){ svg.style.transition = `transform ${ease}`; svg.style.transform = isIn||isHoldIn ? 'scale(1.1)' : 'scale(1)'; }
+      break;
+    }
+    case 'clarity': {
+      // Arms extend outward on inhale — scale + slight rotate
+      if(svg){
+        svg.style.transition = `transform ${duration}ms cubic-bezier(0.2,0.8,0.4,1)`;
+        if(isIn)          svg.style.transform = 'scale(1.18) rotate(30deg)';
+        else if(isHoldIn) svg.style.transform = 'scale(1.18) rotate(30deg)';
+        else if(isOut)    svg.style.transform = 'scale(0.88) rotate(0deg)';
+        else              svg.style.transform = 'scale(0.88) rotate(0deg)';
+      }
+      break;
+    }
+    case 'gratitude': {
+      // Petals open (scale + rotate) on inhale like a blooming flower
+      const paths = currentShape.querySelectorAll('path');
+      paths.forEach((p, i) => {
+        const angle = i * (360/8);
+        p.style.transition = `transform ${ease}`;
+        p.style.transformOrigin = '110px 110px';
+        if(isIn || isHoldIn){
+          p.style.transform = `rotate(${angle}deg) scale(1.12)`;
+        } else {
+          p.style.transform = `rotate(${angle - 8}deg) scale(0.92)`;
+        }
+      });
+      if(svg){ svg.style.transition = `transform ${ease}`; svg.style.transform = isIn||isHoldIn ? 'scale(1.1)' : 'scale(0.95)'; }
+      break;
+    }
+    case 'release': {
+      // Spiral drifts and unwinds — rotate + scale
+      if(svg){
+        svg.style.transition = `transform ${duration}ms cubic-bezier(0.3,0,0.7,1)`;
+        if(isIn)          svg.style.transform = 'scale(1.14) rotate(20deg)';
+        else if(isHoldIn) svg.style.transform = 'scale(1.14) rotate(22deg)';
+        else if(isOut)    svg.style.transform = 'scale(0.92) rotate(-8deg)';
+        else              svg.style.transform = 'scale(0.9) rotate(-10deg)';
+      }
+      // Fade the outer spiral path on exhale
+      const paths = currentShape.querySelectorAll('path');
+      paths.forEach((p, i) => {
+        p.style.transition = `opacity ${ease}`;
+        p.style.opacity = isOut||isHoldOut ? (i===0?'0.5':'0.35') : (i===0?'0.85':'0.6');
+      });
+      break;
+    }
+    case 'wonder': {
+      // Infinity curves trace and pulse — rotate slowly, breathe in size
+      if(svg){
+        svg.style.transition = `transform ${duration}ms cubic-bezier(0.4,0,0.6,1)`;
+        if(isIn)          svg.style.transform = 'scale(1.15) rotate(10deg)';
+        else if(isHoldIn) svg.style.transform = 'scale(1.15) rotate(12deg)';
+        else if(isOut)    svg.style.transform = 'scale(0.9) rotate(-5deg)';
+        else              svg.style.transform = 'scale(0.88) rotate(-6deg)';
+      }
+      // Pulse path opacity
+      const paths = currentShape.querySelectorAll('path');
+      paths.forEach((p, i) => {
+        p.style.transition = `opacity ${ease}`;
+        const base = i < 2 ? 0.85 : 0.45;
+        p.style.opacity = isIn||isHoldIn ? base : base * 0.6;
+      });
+      break;
+    }
+    default:
+      if(svg){ svg.style.transition = `transform ${ease}`; svg.style.transform = isIn||isHoldIn ? 'scale(1.12)' : 'scale(0.9)'; }
+  }
 }
 
 // ── Intent selection ──
@@ -768,6 +982,8 @@ function initIntentions(){
 }
 
 function selectIntention(el,intent){
+  startAmbient(intent.id);
+  updateParticles(intent.id);
   document.querySelectorAll('.intention-card').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
   selectedIntention = intent;
@@ -839,7 +1055,8 @@ function runBreathPhase(){
     document.getElementById('breath-phase').textContent = 'Complete';
     document.getElementById('breath-count').textContent = '✦';
     animateShape(1.0, 800);
-    setTimeout(()=>{document.getElementById('btn-to-be').style.display = 'block';},600);
+    setTimeout(()=>{document.getElementById('btn-to-be').style.display = 'block';
+    fadeOutAmbient();},600);
     return;
   }
   const phase = BREATH_PHASES[breathPhaseIdx];
@@ -880,6 +1097,7 @@ function goToBrew(){
 }
 
 function goToBreathe(){
+  if(selectedIntention) startAmbient(selectedIntention.id);
   if(steepInterval) clearInterval(steepInterval);
   renderShape(selectedIntention.shape, selectedIntention.colorMid);
   showStep('step-breathe');
@@ -896,6 +1114,7 @@ function goToBe(){
 }
 
 function goToMagic(){
+  showWonderFact();
   const prompts = selectedIntention.magic_prompts;
   const prompt = prompts[Math.floor(Math.random()*prompts.length)];
   document.getElementById('magic-prompt').textContent = prompt;
@@ -919,6 +1138,12 @@ function showStep(id){
 }
 
 function startOver(){
+  fadeOutAmbient();
+  if(document.getElementById('starfield')) document.getElementById('starfield').dataset.intention='';
+  const sealWrap=document.getElementById('seal-canvas-wrap'); if(sealWrap) sealWrap.style.display='none';
+  const sealBtn=document.getElementById('btn-seal'); if(sealBtn) sealBtn.disabled=false;
+  const complete=document.getElementById('seal-complete'); if(complete) complete.style.opacity='0';
+  const wf=document.getElementById('wonder-fact-text'); if(wf){ wf.classList.remove('visible'); wf.textContent=''; }
   if(steepInterval) clearInterval(steepInterval);
   if(breathTimer) clearInterval(breathTimer);
   selectedIntention = null;
@@ -956,7 +1181,281 @@ function shareRitual(){
 document.addEventListener('DOMContentLoaded',()=>{
   initStars();
   initIntentions();
+  setTimeGreeting();
 });
+
+
+// ── TIME-AWARE GREETING ──
+function setTimeGreeting(){
+  const h = new Date().getHours();
+  const el = document.getElementById('time-greeting');
+  if(!el) return;
+  let greeting, sub;
+  if(h >= 5 && h < 12){
+    greeting = 'Good morning, seeker.';
+    sub = 'A ritual to begin the day with intention.<br>Five minutes. One cup. One breath at a time.';
+  } else if(h >= 12 && h < 17){
+    greeting = 'A midday pause. Wise.';
+    sub = 'The afternoon asks nothing of you right now.<br>Five minutes. One cup. One breath at a time.';
+  } else if(h >= 17 && h < 21){
+    greeting = 'Good evening.';
+    sub = 'Let the day soften before the night.<br>Five minutes. One cup. One breath at a time.';
+  } else {
+    greeting = 'The night is a good time for this.';
+    sub = 'Something in the quiet hours makes magic easier to find.<br>Five minutes. One cup. One breath at a time.';
+  }
+  el.innerHTML = `<em style="font-family:Playfair Display,serif;font-size:15px;color:var(--gold-light);opacity:0.8;">${greeting}</em><br>${sub}`;
+}
+
+// ── WONDER FACTS ──
+const WONDER_FACTS = [
+  "Honey never spoils. Archaeologists have found 3,000-year-old honey in Egyptian tombs that is still perfectly edible.",
+  "Trees in a forest share nutrients through underground fungal networks, passing food to sick or struggling neighbors. Forests are communities.",
+  "The sound of rain you can smell — that specific earthy scent — is called petrichor. It is caused by a compound released by soil bacteria greeting the water.",
+  "A single teaspoon of soil contains more living organisms than there are people on Earth.",
+  "Otters hold hands while sleeping so they do not drift away from each other. This is called a raft.",
+  "The total weight of all ants on Earth is roughly equal to the total weight of all humans.",
+  "Stars do not twinkle. The twinkling is caused by Earth's atmosphere bending the light on its way to your eyes. The stars themselves are perfectly steady.",
+  "Crows remember individual human faces and will hold grudges — or friendships — for years.",
+  "The blue of the sky is not a color that exists. It is an optical effect of light scattering. The sky has no color of its own.",
+  "Cleopatra lived closer in time to the Moon landing than to the construction of the Great Pyramid.",
+  "The average cloud weighs about 1.1 million pounds. The sky holds unimaginable weight above us at all times.",
+  "Plants respond to sound. Studies show they grow toward the frequency of running water and can distinguish between recordings of caterpillars eating and other sounds.",
+  "The word 'forest' comes from a Latin word meaning 'outside.' Forests were the wild beyond the known world.",
+  "Butterflies taste with their feet.",
+  "There are more possible iterations of a game of chess than there are atoms in the observable universe.",
+  "The human heart beats approximately 100,000 times per day, every day, for an entire lifetime, without being asked.",
+  "Light from the sun takes 8 minutes to reach Earth. The sunlight on your skin right now left the sun 8 minutes ago.",
+  "Flamingos are not pink. They are born grey. They become pink from the carotenoids in the algae they eat. They are what they consume.",
+  "The smell of old books — that warm, vanilla-and-grass scent — is caused by hundreds of chemical compounds released as the paper gently breaks down.",
+  "Whales sing. And the songs change over time, spreading from whale to whale across oceans, like a living musical tradition.",
+  "Your body replaces most of its cells every 7 to 10 years. You are, in a very real sense, not the same person you were a decade ago.",
+  "There is a species of jellyfish that is biologically immortal. When it ages, it reverts to its juvenile state and begins again.",
+  "The moon is slowly drifting away from Earth — about 3.8 centimetres per year. It has been doing this for billions of years.",
+  "Octopuses have three hearts, blue blood, and their arms can act independently, solving problems even when disconnected from their brain.",
+  "When you look at the night sky, you are looking into the past. The light from distant stars took thousands of years to reach your eyes.",
+];
+
+function showWonderFact(){
+  const fact = WONDER_FACTS[Math.floor(Math.random()*WONDER_FACTS.length)];
+  const el = document.getElementById('wonder-fact-text');
+  if(el){
+    el.textContent = '\u201C' + fact + '\u201D';
+    setTimeout(()=>el.classList.add('visible'), 300);
+  }
+}
+
+// ── SEAL YOUR MAGIC ──
+function sealMagic(){
+  const input = document.getElementById('magic-input');
+  const text = input ? input.value.trim() : '';
+  if(!text) return;
+  const btn = document.getElementById('btn-seal');
+  if(btn) btn.disabled = true;
+  const wrap = document.getElementById('seal-canvas-wrap');
+  const canvas = document.getElementById('seal-canvas');
+  const complete = document.getElementById('seal-complete');
+  if(!canvas || !wrap) return;
+  wrap.style.display = 'block';
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const color = selectedIntention ? selectedIntention.colorMid : '#c4a8e0';
+
+  // Particles from text
+  const particles = [];
+  const words = text.split(' ');
+  for(let i=0; i<60; i++){
+    particles.push({
+      x: W/2 + (Math.random()-0.5)*180,
+      y: H/2 + (Math.random()-0.5)*40,
+      vx: (Math.random()-0.5)*2.5,
+      vy: -Math.random()*3 - 1,
+      size: Math.random()*3+1,
+      alpha: 1,
+      decay: Math.random()*0.012+0.008,
+      char: text[Math.floor(Math.random()*text.length)],
+    });
+  }
+
+  let frame = 0;
+  const maxFrames = 180;
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // Draw fading text
+    const textAlpha = Math.max(0, 1 - frame/60);
+    if(textAlpha > 0){
+      ctx.globalAlpha = textAlpha;
+      ctx.font = 'italic 18px Playfair Display, serif';
+      ctx.fillStyle = color;
+      ctx.textAlign = 'center';
+      ctx.fillText(text.length > 50 ? text.substring(0,50)+'...' : text, W/2, H/2);
+      ctx.globalAlpha = 1;
+    }
+    // Draw rising particles
+    particles.forEach(p => {
+      if(p.alpha <= 0) return;
+      ctx.globalAlpha = p.alpha;
+      ctx.fillStyle = color;
+      ctx.font = `${p.size*4}px serif`;
+      ctx.fillText('✦', p.x, p.y);
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy *= 0.99;
+      p.alpha -= p.decay;
+    });
+    ctx.globalAlpha = 1;
+    frame++;
+    if(frame < maxFrames) requestAnimationFrame(draw);
+    else {
+      ctx.clearRect(0,0,W,H);
+      if(complete){
+        complete.style.opacity = '1';
+        // Gentle pulse on the affirmation
+        const affEl = document.getElementById('be-affirmation');
+        if(affEl){ affEl.style.transition='opacity 0.5s'; affEl.style.opacity='0.4'; setTimeout(()=>affEl.style.opacity='1',600); }
+      }
+    }
+  }
+  requestAnimationFrame(draw);
+}
+
+// ── AMBIENT SOUNDSCAPES ──
+let ambientNodes = [];
+let ambientGain = null;
+
+function stopAmbient(){
+  ambientNodes.forEach(n=>{ try{ n.stop(); }catch(e){} });
+  ambientNodes = [];
+  if(ambientGain){ try{ ambientGain.disconnect(); }catch(e){} ambientGain=null; }
+}
+
+function startAmbient(intentionId){
+  if(!soundEnabled) return;
+  stopAmbient();
+  try{
+    const ctx = getAudioCtx();
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0, ctx.currentTime);
+    master.gain.linearRampToValueAtTime(0.07, ctx.currentTime+3);
+    master.connect(ctx.destination);
+    ambientGain = master;
+
+    const configs = {
+      rest:      [{f:174,t:'sine',v:0.6},{f:285,t:'sine',v:0.3},{f:396,t:'sine',v:0.15}],
+      joy:       [{f:528,t:'sine',v:0.5},{f:639,t:'sine',v:0.3},{f:852,t:'sine',v:0.15}],
+      courage:   [{f:256,t:'sine',v:0.6},{f:384,t:'sine',v:0.3},{f:512,t:'triangle',v:0.15}],
+      clarity:   [{f:432,t:'sine',v:0.5},{f:648,t:'sine',v:0.25},{f:864,t:'sine',v:0.1}],
+      gratitude: [{f:396,t:'sine',v:0.5},{f:528,t:'sine',v:0.3},{f:660,t:'sine',v:0.18}],
+      release:   [{f:285,t:'sine',v:0.55},{f:417,t:'sine',v:0.28},{f:528,t:'sine',v:0.12}],
+      wonder:    [{f:528,t:'sine',v:0.4},{f:741,t:'sine',v:0.25},{f:852,t:'sine',v:0.18},{f:963,t:'sine',v:0.1}],
+    };
+
+    const tones = configs[intentionId] || configs.rest;
+    tones.forEach(({f,t,v}) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      // Slight detune for warmth
+      osc.frequency.value = f + (Math.random()-0.5)*2;
+      osc.type = t;
+      gain.gain.setValueAtTime(v * 0.12, ctx.currentTime);
+      // Slow gentle tremolo
+      const lfo = ctx.createOscillator();
+      const lfoGain = ctx.createGain();
+      lfo.frequency.value = 0.08 + Math.random()*0.05;
+      lfoGain.gain.value = 0.015;
+      lfo.connect(lfoGain);
+      lfoGain.connect(gain.gain);
+      lfo.start();
+      osc.connect(gain);
+      gain.connect(master);
+      osc.start();
+      ambientNodes.push(osc, lfo);
+    });
+  }catch(e){ console.warn('Ambient sound error:',e); }
+}
+
+function fadeOutAmbient(){
+  if(!ambientGain) return;
+  try{
+    const ctx = getAudioCtx();
+    ambientGain.gain.linearRampToValueAtTime(0, ctx.currentTime+3);
+    setTimeout(stopAmbient, 3200);
+  }catch(e){}
+}
+
+// ── INTENTION-MATCHED PARTICLES ──
+function updateParticles(intentionId){
+  const canvas = document.getElementById('starfield');
+  if(!canvas) return;
+  // Store intention on canvas for the draw loop to read
+  canvas.dataset.intention = intentionId;
+}
+
+// Override initStars to support intention-based behavior
+function initStars(){
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+
+  const stars = Array.from({length:140},()=>({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*1.6+0.3,
+    o:Math.random(),
+    s:Math.random()*0.006+0.002,
+    vx:(Math.random()-0.5)*0.1,
+    vy:(Math.random()-0.5)*0.1,
+    baseSpeed:Math.random()*0.006+0.002,
+  }));
+
+  // Extra particles for joy / wonder
+  const specials = Array.from({length:20},()=>({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*2.5+1,
+    o:0, s:0.01, vy:-0.3-Math.random()*0.4, vx:(Math.random()-0.5)*0.2,
+    alpha:0,
+  }));
+
+  const intentionSpeeds = {
+    rest:0.002, joy:0.012, courage:0.006, clarity:0.004,
+    gratitude:0.005, release:0.008, wonder:0.014,
+  };
+
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const intention = canvas.dataset.intention || 'rest';
+    const speed = intentionSpeeds[intention] || 0.005;
+
+    // Update star twinkle speed based on intention
+    stars.forEach(s=>{
+      s.s = speed * (0.5 + Math.random()*0.5);
+      s.o += s.s; if(s.o>1||s.o<0) s.s*=-1;
+      // For release — drift upward gently
+      if(intention==='release') s.y -= 0.08;
+      if(s.y < 0) s.y = canvas.height;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,255,255,${s.o*0.55})`;
+      ctx.fill();
+    });
+
+    // Special rising sparkles for joy and wonder
+    if(intention==='joy'||intention==='wonder'){
+      specials.forEach(s=>{
+        s.alpha += 0.008; if(s.alpha>0.6) s.alpha=0;
+        s.y+=s.vy; s.x+=s.vx;
+        if(s.y<0){ s.y=canvas.height; s.x=Math.random()*canvas.width; s.alpha=0; }
+        ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(240,200,80,${s.alpha})`;
+        ctx.fill();
+      });
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize',()=>{ canvas.width=window.innerWidth; canvas.height=window.innerHeight; });
+}
 
 </script>
 </body>
