@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brew & Breathe — WhimsiTea</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sage: #7BAF7C;
+    --sage-light: #C4DDB5;
+    --sage-pale: #EDF5E5;
+    --peach: #F5A98B;
+    --peach-light: #FDE4D6;
+    --peach-pale: #FFF3ED;
+    --lavender: #B89FD8;
+    --lavender-light: #E2D6F5;
+    --lavender-pale: #F3EEFF;
+    --honey: #F2C46D;
+    --honey-light: #FCE9B3;
+    --honey-pale: #FFFBEF;
+    --sky: #87C4E0;
+    --sky-light: #D0ECF9;
+    --sky-pale: #F0F9FF;
+    --rose: #E07A8C;
+    --ink: #2C2535;
+    --ink-soft: #4A4255;
+    --mist: #F8F6FF;
+    --white: #FFFFFF;
+    --radius: 20px;
+    --radius-sm: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--mist);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+  }
+
+  /* Floating background blobs */
+  .bg-blobs {
+    position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+  }
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.35;
+    animation: float-blob 12s ease-in-out infinite;
+  }
+  .blob-1 { width: 320px; height: 320px; background: #C4DDB5; top: -80px; left: -80px; animation-delay: 0s; }
+  .blob-2 { width: 280px; height: 280px; background: #FDE4D6; top: 30%; right: -60px; animation-delay: -4s; }
+  .blob-3 { width: 240px; height: 240px; background: #E2D6F5; bottom: -60px; left: 20%; animation-delay: -8s; }
+  .blob-4 { width: 200px; height: 200px; background: #FCE9B3; bottom: 10%; right: 15%; animation-delay: -2s; }
+
+  @keyframes float-blob {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(12px, -18px) scale(1.04); }
+    66% { transform: translate(-8px, 10px) scale(0.97); }
+  }
+
+  /* App shell */
+  .app {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 420px;
+    padding: 16px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .logo-mark {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--white);
+    border-radius: 50px;
+    padding: 8px 18px;
+    box-shadow: 0 2px 16px rgba(123,175,124,0.18);
+    margin-bottom: 8px;
+  }
+  .logo-cup {
+    font-size: 22px;
+  }
+  .logo-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+  .tagline {
+    font-size: 12px;
+    color: var(--ink-soft);
+    opacity: 0.7;
+    letter-spacing: 0.04em;
+  }
+
+  /* Screen management */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── SCREEN 1: Brew Picker ── */
+  .pick-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    color: var(--ink);
+    text-align: center;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .pick-sub {
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-align: center;
+    margin-bottom: 24px;
+    opacity: 0.75;
+  }
+
+  .brew-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .brew-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 20px 16px 16px;
+    cursor: pointer;
+    border: 2.5px solid transparent;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+  .brew-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    border-radius: 4px 4px 0 0;
+  }
+  .brew-card.sage::before { background: var(--sage); }
+  .brew-card.peach::before { background: var(--peach); }
+  .brew-card.lavender::before { background: var(--lavender); }
+  .brew-card.honey::before { background: var(--honey); }
+
+  .brew-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,0.10); }
+  .brew-card.selected.sage { border-color: var(--sage); background: var(--sage-pale); }
+  .brew-card.selected.peach { border-color: var(--peach); background: var(--peach-pale); }
+  .brew-card.selected.lavender { border-color: var(--lavender); background: var(--lavender-pale); }
+  .brew-card.selected.honey { border-color: var(--honey); background: var(--honey-pale); }
+
+  .brew-emoji { font-size: 36px; display: block; margin-bottom: 8px; }
+  .brew-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .brew-mood {
+    font-size: 11px;
+    color: var(--ink-soft);
+    opacity: 0.7;
+    line-height: 1.4;
+  }
+  .brew-time {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .sage .brew-time { background: var(--sage-light); color: #3A7040; }
+  .peach .brew-time { background: var(--peach-light); color: #9A4A28; }
+  .lavender .brew-time { background: var(--lavender-light); color: #5C3A8A; }
+  .honey .brew-time { background: var(--honey-light); color: #7A5B10; }
+
+  /* ── CTA Button ── */
+  .btn-main {
+    width: 100%;
+    padding: 16px;
+    border-radius: 50px;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .btn-main:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+  .btn-main:active { transform: scale(0.98); }
+  .btn-main:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-sage { background: var(--sage); color: white; }
+  .btn-peach { background: var(--peach); color: white; }
+  .btn-lavender { background: var(--lavender); color: white; }
+  .btn-honey { background: var(--honey); color: #4a3500; }
+  .btn-ink { background: var(--ink); color: white; }
+
+  /* ── SCREEN 2: Breathe ── */
+  .breathe-wrap {
+    text-align: center;
+    padding: 8px 0 24px;
+  }
+  .step-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    opacity: 0.6;
+    margin-bottom: 6px;
+  }
+  .breathe-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .breathe-sub {
+    font-size: 13px;
+    color: var(--ink-soft);
+    opacity: 0.7;
+    margin-bottom: 32px;
+  }
+
+  .breath-ring-wrap {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 24px;
+  }
+  .breath-ring-bg {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background: var(--white);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+  .breath-circle {
+    position: absolute;
+    border-radius: 50%;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.45);
+    transition: transform 0.1s linear;
+    width: 160px;
+    height: 160px;
+    opacity: 0.85;
+  }
+  .breath-instruction {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .breath-word {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--white);
+    font-style: italic;
+    display: block;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+  .breath-count {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--white);
+    display: block;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.25);
+    line-height: 1;
+    margin-top: 4px;
+  }
+
+  .breath-pattern {
+    font-size: 13px;
+    color: var(--ink-soft);
+    opacity: 0.65;
+    margin-bottom: 28px;
+  }
+  .breath-pattern span {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--white);
+    margin: 0 2px;
+    font-weight: 600;
+  }
+
+  /* progress dots */
+  .breath-dots {
+    display: flex; justify-content: center; gap: 8px; margin-bottom: 28px;
+  }
+  .bdot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--ink-soft); opacity: 0.2;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .bdot.done { opacity: 0.9; transform: scale(1.2); }
+
+  /* ── SCREEN 3: Steep Timer ── */
+  .steep-wrap { text-align: center; padding: 8px 0 24px; }
+
+  .kettle-scene {
+    width: 120px; height: 120px;
+    margin: 0 auto 16px;
+    position: relative;
+  }
+  .kettle-svg { width: 100%; height: 100%; }
+
+  .steam-line {
+    stroke-dasharray: 8 4;
+    stroke-dashoffset: 0;
+    animation: steam-rise 1.8s ease-in-out infinite;
+    opacity: 0;
+  }
+  .steam-line:nth-child(2) { animation-delay: 0.4s; }
+  .steam-line:nth-child(3) { animation-delay: 0.8s; }
+
+  @keyframes steam-rise {
+    0% { opacity: 0; stroke-dashoffset: 0; transform: translateY(0); }
+    30% { opacity: 0.7; }
+    80% { opacity: 0.3; }
+    100% { opacity: 0; stroke-dashoffset: -24; transform: translateY(-8px); }
+  }
+
+  .steep-timer-ring {
+    position: relative;
+    width: 160px; height: 160px;
+    margin: 0 auto 8px;
+  }
+  .steep-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .steep-track { fill: none; stroke: #E8E4F0; stroke-width: 6; }
+  .steep-progress {
+    fill: none; stroke-width: 6;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear;
+  }
+  .steep-center {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .steep-time-big {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px; font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .steep-label-sm {
+    font-size: 11px; color: var(--ink-soft); opacity: 0.65;
+    margin-top: 2px;
+  }
+
+  .steep-tip {
+    background: var(--white);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin: 16px 0 24px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    font-style: italic;
+  }
+  .steep-tip::before { content: '✨ '; }
+
+  /* ── SCREEN 4: Affirmation ── */
+  .affirm-wrap { text-align: center; padding: 8px 0 24px; }
+  .affirm-card {
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .affirm-card::after {
+    content: '';
+    position: absolute;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    right: -40px; bottom: -40px;
+    opacity: 0.15;
+  }
+  .affirm-card.sage { background: var(--sage-light); }
+  .affirm-card.sage::after { background: var(--sage); }
+  .affirm-card.peach { background: var(--peach-light); }
+  .affirm-card.peach::after { background: var(--peach); }
+  .affirm-card.lavender { background: var(--lavender-light); }
+  .affirm-card.lavender::after { background: var(--lavender); }
+  .affirm-card.honey { background: var(--honey-light); }
+  .affirm-card.honey::after { background: var(--honey); }
+
+  .affirm-release-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; opacity: 0.6; margin-bottom: 8px;
+    color: var(--ink);
+  }
+  .affirm-release-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px; color: var(--ink);
+    line-height: 1.4; margin-bottom: 20px;
+    font-style: italic;
+  }
+  .affirm-divider {
+    width: 40px; height: 2px;
+    border-radius: 2px;
+    margin: 0 auto 20px;
+    opacity: 0.4;
+  }
+  .affirm-receive-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; opacity: 0.6; margin-bottom: 8px;
+    color: var(--ink);
+  }
+  .affirm-receive-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; color: var(--ink);
+    line-height: 1.4; font-weight: 700;
+  }
+
+  /* ── SCREEN 5: Mood Log ── */
+  .mood-wrap { text-align: center; padding: 8px 0 24px; }
+  .mood-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px; color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .mood-sub {
+    font-size: 13px; color: var(--ink-soft); opacity: 0.7;
+    margin-bottom: 24px;
+  }
+  .mood-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 10px; margin-bottom: 20px;
+  }
+  .mood-btn {
+    background: var(--white);
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    padding: 14px 8px;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: center;
+  }
+  .mood-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .mood-btn.selected { border-color: var(--sage); background: var(--sage-pale); }
+  .mood-emoji { font-size: 26px; display: block; margin-bottom: 4px; }
+  .mood-word { font-size: 11px; font-weight: 600; color: var(--ink-soft); }
+
+  /* ── SCREEN 6: Reward ── */
+  .reward-wrap { text-align: center; padding: 8px 0 24px; }
+
+  .sigil-display {
+    width: 140px; height: 140px;
+    margin: 0 auto 20px;
+    background: var(--white);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 32px rgba(0,0,0,0.1);
+    animation: sigil-appear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    font-size: 64px;
+  }
+
+  @keyframes sigil-appear {
+    0% { transform: scale(0.3) rotate(-20deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  .reward-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .reward-sub {
+    font-size: 14px; color: var(--ink-soft); opacity: 0.75;
+    margin-bottom: 8px; line-height: 1.5;
+  }
+  .streak-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--honey-light);
+    color: #7A5B10; font-size: 13px; font-weight: 700;
+    padding: 6px 16px; border-radius: 50px;
+    margin-bottom: 24px;
+  }
+
+  .sigil-name {
+    font-size: 13px; color: var(--ink-soft); opacity: 0.65;
+    margin-bottom: 24px; font-style: italic;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    border: 2px solid var(--ink);
+    color: var(--ink);
+    width: 100%;
+    padding: 14px;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 10px;
+    opacity: 0.5;
+  }
+  .btn-secondary:hover { opacity: 0.8; transform: translateY(-1px); }
+
+  /* ── White card wrapper ── */
+  .card-wrap {
+    background: var(--white);
+    border-radius: 28px;
+    padding: 24px 20px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+  }
+
+  /* ── Transitions ── */
+  .screen-enter { animation: fadeSlideIn 0.35s ease forwards; }
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Sparkles ── */
+  .sparkle-container {
+    position: fixed; inset: 0; pointer-events: none; z-index: 100; overflow: hidden;
+  }
+  .sparkle {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    animation: sparkle-fall 1.2s ease-out forwards;
+  }
+  @keyframes sparkle-fall {
+    0% { transform: translateY(-20px) rotate(0deg) scale(1); opacity: 1; }
+    100% { transform: translateY(100px) rotate(180deg) scale(0); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+</div>
+<div class="sparkle-container" id="sparkles"></div>
+
+<div class="app">
+  <div class="header">
+    <div class="logo-mark">
+      <span class="logo-cup">🫖</span>
+      <span class="logo-text">Brew & Breathe</span>
+    </div>
+    <div class="tagline">a whimsitea ritual</div>
+  </div>
+
+  <!-- SCREEN 1: Pick your brew -->
+  <div class="screen active card-wrap screen-enter" id="screen-pick">
+    <div class="pick-title">What shall we<br><em>brew today?</em></div>
+    <div class="pick-sub">Choose a card that calls to you ✨</div>
+
+    <div class="brew-grid">
+      <div class="brew-card sage" data-brew="sage" onclick="selectBrew(this)">
+        <span class="brew-emoji">🌿</span>
+        <div class="brew-name">Morning Garden</div>
+        <div class="brew-mood">Fresh clarity, new beginnings</div>
+        <span class="brew-time">3 min steep</span>
+      </div>
+      <div class="brew-card peach" data-brew="peach" onclick="selectBrew(this)">
+        <span class="brew-emoji">🌸</span>
+        <div class="brew-name">Blossom Heart</div>
+        <div class="brew-mood">Open to joy, soften in</div>
+        <span class="brew-time">4 min steep</span>
+      </div>
+      <div class="brew-card lavender" data-brew="lavender" onclick="selectBrew(this)">
+        <span class="brew-emoji">🔮</span>
+        <div class="brew-name">Twilight Magic</div>
+        <div class="brew-mood">Settle deep, dream awake</div>
+        <span class="brew-time">5 min steep</span>
+      </div>
+      <div class="brew-card honey" data-brew="honey" onclick="selectBrew(this)">
+        <span class="brew-emoji">🍯</span>
+        <div class="brew-name">Golden Hour</div>
+        <div class="brew-mood">Warmth, sweetness, ease</div>
+        <span class="brew-time">4 min steep</span>
+      </div>
+    </div>
+
+    <button class="btn-main btn-sage" id="btn-begin" disabled onclick="goTo('screen-breathe')">
+      Begin the ritual →
+    </button>
+  </div>
+
+  <!-- SCREEN 2: Breathe -->
+  <div class="screen card-wrap" id="screen-breathe">
+    <div class="breathe-wrap">
+      <div class="step-label">Step 1 of 4</div>
+      <div class="breathe-title">One minute of calm</div>
+      <div class="breathe-sub">Follow the circle. Put the kettle on. 🫖</div>
+
+      <div class="breath-ring-wrap">
+        <div class="breath-ring-bg"></div>
+        <div class="breath-circle" id="breath-circle"></div>
+        <div class="breath-instruction">
+          <span class="breath-word" id="breath-word">inhale</span>
+          <span class="breath-count" id="breath-count">4</span>
+        </div>
+      </div>
+
+      <div class="breath-pattern">
+        <span id="bp-in">inhale 4</span> · <span id="bp-hold">hold 7</span> · <span id="bp-out">exhale 8</span>
+      </div>
+
+      <div class="breath-dots" id="breath-dots">
+        <div class="bdot"></div>
+        <div class="bdot"></div>
+        <div class="bdot"></div>
+      </div>
+
+      <button class="btn-main btn-sage" id="btn-next-breathe" disabled onclick="goTo('screen-steep')">
+        Kettle's on! → Set intention
+      </button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: Steep + Intention -->
+  <div class="screen card-wrap" id="screen-steep">
+    <div class="steep-wrap">
+      <div class="step-label">Step 2 of 4</div>
+      <div class="breathe-title" id="steep-brew-name">Steeping...</div>
+      <div class="breathe-sub" style="margin-bottom:20px">While your tea steeps, set a tiny intention.</div>
+
+      <!-- Kettle SVG -->
+      <div class="kettle-scene">
+        <svg class="kettle-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Steam lines -->
+          <path class="steam-line" d="M52 30 Q48 22 52 14" stroke="#B89FD8" stroke-width="2.5" stroke-linecap="round"/>
+          <path class="steam-line" d="M62 28 Q66 20 62 12" stroke="#87C4E0" stroke-width="2.5" stroke-linecap="round"/>
+          <path class="steam-line" d="M72 30 Q68 22 72 14" stroke="#F5A98B" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Kettle body -->
+          <rect x="25" y="40" width="70" height="55" rx="18" fill="#F8F4FF" stroke="#D8D0EE" stroke-width="2"/>
+          <!-- Color fill based on brew -->
+          <rect id="kettle-fill" x="27" y="72" width="66" height="21" rx="0" fill="#C4DDB5" opacity="0.6"/>
+          <rect x="27" y="70" width="66" height="3" rx="1" fill="#C4DDB5" opacity="0.4"/>
+          <!-- Spout -->
+          <path d="M95 62 Q112 58 108 48 Q104 40 95 44" fill="#F0EBF8" stroke="#D8D0EE" stroke-width="2"/>
+          <!-- Handle -->
+          <path d="M25 55 Q10 60 10 75 Q10 90 25 85" stroke="#D8D0EE" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <!-- Lid -->
+          <rect x="40" y="36" width="40" height="10" rx="5" fill="#EEE8FF" stroke="#D8D0EE" stroke-width="2"/>
+          <circle cx="60" cy="34" r="4" fill="#B89FD8"/>
+          <!-- Shine -->
+          <ellipse cx="70" cy="58" rx="8" ry="4" fill="white" opacity="0.4" transform="rotate(-15 70 58)"/>
+        </svg>
+      </div>
+
+      <!-- Steep ring timer -->
+      <div class="steep-timer-ring">
+        <svg class="steep-svg" viewBox="0 0 160 160">
+          <circle class="steep-track" cx="80" cy="80" r="68"/>
+          <circle class="steep-progress" id="steep-progress-circle" cx="80" cy="80" r="68"
+            stroke="#7BAF7C"
+            stroke-dasharray="427" stroke-dashoffset="0"/>
+        </svg>
+        <div class="steep-center">
+          <div class="steep-time-big" id="steep-countdown">3:00</div>
+          <div class="steep-label-sm">steeping</div>
+        </div>
+      </div>
+
+      <div class="steep-tip" id="steep-tip">Notice one thing you're grateful for right now — however small.</div>
+
+      <button class="btn-main btn-sage" id="btn-next-steep" disabled onclick="goTo('screen-affirm')">
+        Tea is ready ✨
+      </button>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: Affirmation -->
+  <div class="screen card-wrap" id="screen-affirm">
+    <div class="affirm-wrap">
+      <div class="step-label">Step 3 of 4</div>
+      <div class="breathe-title">Release & Receive</div>
+      <div class="breathe-sub" style="margin-bottom:20px">Your cup holds both.</div>
+
+      <div class="affirm-card sage" id="affirm-card">
+        <div class="affirm-release-label">🍃 I release</div>
+        <div class="affirm-release-text" id="affirm-release">"The need to have everything figured out."</div>
+        <div class="affirm-divider sage" id="affirm-divider"></div>
+        <div class="affirm-receive-label">✨ I receive</div>
+        <div class="affirm-receive-text" id="affirm-receive">Permission to simply begin.</div>
+      </div>
+
+      <div class="breathe-sub" style="margin-bottom:20px">Take your first sip. Let it land.</div>
+
+      <button class="btn-main btn-sage" id="btn-next-affirm" onclick="goTo('screen-mood')">
+        Log how I feel →
+      </button>
+    </div>
+  </div>
+
+  <!-- SCREEN 5: Mood log -->
+  <div class="screen card-wrap" id="screen-mood">
+    <div class="mood-wrap">
+      <div class="step-label">Step 4 of 4</div>
+      <div class="mood-title">How do you feel<br><em>right now?</em></div>
+      <div class="mood-sub">One honest check-in 🌱</div>
+
+      <div class="mood-grid">
+        <div class="mood-btn" onclick="selectMood(this)">
+          <span class="mood-emoji">🌸</span>
+          <div class="mood-word">Soft & Open</div>
+        </div>
+        <div class="mood-btn" onclick="selectMood(this)">
+          <span class="mood-emoji">✨</span>
+          <div class="mood-word">Bright & Clear</div>
+        </div>
+        <div class="mood-btn" onclick="selectMood(this)">
+          <span class="mood-emoji">🌿</span>
+          <div class="mood-word">Calm & Rooted</div>
+        </div>
+        <div class="mood-btn" onclick="selectMood(this)">
+          <span class="mood-emoji">🌊</span>
+          <div class="mood-word">Still Moving</div>
+        </div>
+        <div class="mood-btn" onclick="selectMood(this)">
+          <span class="mood-emoji">🔥</span>
+          <div class="mood-word">Ready & Alive</div>
+        </div>
+        <div class="mood-btn" onclick="selectMood(this)">
+          <span class="mood-emoji">🌙</span>
+          <div class="mood-word">Quiet & Inward</div>
+        </div>
+      </div>
+
+      <button class="btn-main btn-sage" id="btn-mood-done" disabled onclick="finishRitual()">
+        Complete my ritual →
+      </button>
+    </div>
+  </div>
+
+  <!-- SCREEN 6: Reward -->
+  <div class="screen card-wrap" id="screen-reward">
+    <div class="reward-wrap">
+      <div class="sigil-display" id="sigil-display">🌿</div>
+      <div class="reward-title">Ritual complete!</div>
+      <div class="reward-sub" id="reward-sub">You showed up for yourself today.<br>That's the whole magic.</div>
+      <div class="sigil-name" id="sigil-name">Steam-sigil: <em>Morning Garden</em></div>
+      <div class="streak-badge">🔥 Day 1 streak — your cozy chain begins!</div>
+
+      <button class="btn-main btn-sage" onclick="sparkleAndShare()">Share my sigil ✨</button>
+      <button class="btn-secondary" onclick="resetApp()">Brew again tomorrow 🫖</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── State ──
+const BREWS = {
+  sage: {
+    name: 'Morning Garden', emoji: '🌿', color: 'sage', btnClass: 'btn-sage',
+    steep: 180, accent: '#7BAF7C', fillColor: '#C4DDB5',
+    tip: 'Notice one thing you\'re grateful for right now — however small.',
+    release: '"The need to have everything figured out."',
+    receive: 'Permission to simply begin.',
+    sigil: '🌱', sigilName: 'Seedling Spark'
+  },
+  peach: {
+    name: 'Blossom Heart', emoji: '🌸', color: 'peach', btnClass: 'btn-peach',
+    steep: 240, accent: '#F5A98B', fillColor: '#FDE4D6',
+    tip: 'Think of one person you\'d like to send warmth to today.',
+    release: '"The weight of needing to be more."',
+    receive: 'The lightness of being exactly this.',
+    sigil: '🌸', sigilName: 'Blossom Glow'
+  },
+  lavender: {
+    name: 'Twilight Magic', emoji: '🔮', color: 'lavender', btnClass: 'btn-lavender',
+    steep: 300, accent: '#B89FD8', fillColor: '#E2D6F5',
+    tip: 'What\'s one small thing you\'ve been carrying that you could set down?',
+    release: '"The stories I\'ve been telling myself."',
+    receive: 'Openness to what wants to emerge.',
+    sigil: '🔮', sigilName: 'Moonveil Charm'
+  },
+  honey: {
+    name: 'Golden Hour', emoji: '🍯', color: 'honey', btnClass: 'btn-honey',
+    steep: 240, accent: '#F2C46D', fillColor: '#FCE9B3',
+    tip: 'What small sweetness have you been putting off giving yourself?',
+    release: '"The rush to get to the next thing."',
+    receive: 'The richness of right here, right now.',
+    sigil: '✨', sigilName: 'Sundrip Sigil'
+  }
+};
+
+let currentBrew = null;
+let breathPhase = 'inhale';
+let breathCount = 4;
+let breathCycles = 0;
+let breathTimer = null;
+let steepTimer = null;
+let steepSecondsLeft = 180;
+let steepTotal = 180;
+
+// ── Brew selection ──
+function selectBrew(el) {
+  document.querySelectorAll('.brew-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  currentBrew = BREWS[el.dataset.brew];
+
+  // Update begin button color
+  const btn = document.getElementById('btn-begin');
+  btn.className = `btn-main ${currentBrew.btnClass}`;
+  btn.disabled = false;
+}
+
+// ── Screen transitions ──
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active', 'screen-enter'); });
+  const next = document.getElementById(id);
+  next.classList.add('active', 'screen-enter');
+
+  // Screen-specific setup
+  if (id === 'screen-breathe') startBreathing();
+  if (id === 'screen-steep') setupSteep();
+  if (id === 'screen-affirm') setupAffirm();
+  if (id === 'screen-mood') setupMood();
+  if (id === 'screen-reward') setupReward();
+}
+
+// ── Breathing engine (4-7-8 pattern) ──
+const PHASES = [
+  { name: 'inhale',  duration: 4,  scale: 1,    hint: 'breathe in' },
+  { name: 'hold',    duration: 7,  scale: 1,    hint: 'hold still' },
+  { name: 'exhale',  duration: 8,  scale: 0.45, hint: 'let it go' }
+];
+let phaseIdx = 0;
+let phaseTick = 0;
+
+function startBreathing() {
+  phaseIdx = 0; phaseTick = 0; breathCycles = 0;
+  applyBreathPhase();
+  if (breathTimer) clearInterval(breathTimer);
+  breathTimer = setInterval(tickBreath, 1000);
+}
+
+function applyBreathPhase() {
+  const p = PHASES[phaseIdx];
+  const circle = document.getElementById('breath-circle');
+  const word = document.getElementById('breath-word');
+  const count = document.getElementById('breath-count');
+
+  word.textContent = p.hint;
+  count.textContent = p.duration - phaseTick;
+
+  // Color the circle per brew
+  const col = currentBrew ? currentBrew.accent : '#7BAF7C';
+  circle.style.background = col;
+
+  // Scale
+  const targetScale = p.name === 'exhale' ? 0.45 : (p.name === 'hold' ? 1 : 0.45);
+  if (p.name === 'inhale') {
+    // Animate expand over duration
+    circle.style.transition = `transform ${p.duration}s linear`;
+    circle.style.transform = `translate(-50%, -50%) scale(1)`;
+  } else if (p.name === 'hold') {
+    circle.style.transition = 'none';
+    circle.style.transform = `translate(-50%, -50%) scale(1)`;
+  } else {
+    circle.style.transition = `transform ${p.duration}s linear`;
+    circle.style.transform = `translate(-50%, -50%) scale(0.45)`;
+  }
+}
+
+function tickBreath() {
+  const p = PHASES[phaseIdx];
+  phaseTick++;
+
+  const count = document.getElementById('breath-count');
+  count.textContent = Math.max(0, p.duration - phaseTick);
+
+  if (phaseTick >= p.duration) {
+    phaseTick = 0;
+    phaseIdx = (phaseIdx + 1) % 3;
+    if (phaseIdx === 0) {
+      breathCycles++;
+      const dots = document.querySelectorAll('#breath-dots .bdot');
+      if (breathCycles <= dots.length) dots[breathCycles - 1].classList.add('done');
+    }
+    applyBreathPhase();
+
+    if (breathCycles >= 3) {
+      clearInterval(breathTimer);
+      const btn = document.getElementById('btn-next-breathe');
+      btn.disabled = false;
+      if (currentBrew) btn.className = `btn-main ${currentBrew.btnClass}`;
+      document.getElementById('breath-word').textContent = '✨ lovely';
+      document.getElementById('breath-count').textContent = '';
+    }
+  }
+}
+
+// ── Steep timer ──
+function setupSteep() {
+  if (!currentBrew) return;
+  steepSecondsLeft = currentBrew.steep;
+  steepTotal = currentBrew.steep;
+
+  document.getElementById('steep-brew-name').textContent = currentBrew.name;
+  document.getElementById('steep-tip').textContent = currentBrew.tip;
+  document.getElementById('kettle-fill').setAttribute('fill', currentBrew.fillColor);
+  document.getElementById('steep-progress-circle').setAttribute('stroke', currentBrew.accent);
+
+  const btnS = document.getElementById('btn-next-steep');
+  btnS.className = `btn-main ${currentBrew.btnClass}`;
+  btnS.disabled = true;
+
+  updateSteepDisplay();
+
+  if (steepTimer) clearInterval(steepTimer);
+  steepTimer = setInterval(tickSteep, 1000);
+}
+
+function tickSteep() {
+  steepSecondsLeft--;
+  updateSteepDisplay();
+  if (steepSecondsLeft <= 0) {
+    clearInterval(steepTimer);
+    document.getElementById('btn-next-steep').disabled = false;
+    document.getElementById('steep-countdown').textContent = 'Ready!';
+    triggerSparkles(5);
+  }
+}
+
+function updateSteepDisplay() {
+  const m = Math.floor(steepSecondsLeft / 60);
+  const s = steepSecondsLeft % 60;
+  document.getElementById('steep-countdown').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+
+  const circ = 2 * Math.PI * 68;
+  const progress = steepSecondsLeft / steepTotal;
+  const offset = circ * (1 - progress);
+  document.getElementById('steep-progress-circle').setAttribute('stroke-dashoffset', offset);
+}
+
+// ── Affirmation ──
+function setupAffirm() {
+  if (!currentBrew) return;
+  const card = document.getElementById('affirm-card');
+  card.className = `affirm-card ${currentBrew.color}`;
+  document.getElementById('affirm-release').textContent = currentBrew.release;
+  document.getElementById('affirm-receive').textContent = currentBrew.receive;
+  document.getElementById('affirm-divider').className = `affirm-divider ${currentBrew.color}`;
+  document.getElementById('affirm-divider').style.background = currentBrew.accent;
+
+  const btn = document.getElementById('btn-next-affirm');
+  btn.className = `btn-main ${currentBrew.btnClass}`;
+}
+
+// ── Mood ──
+function setupMood() {
+  if (!currentBrew) return;
+  document.getElementById('btn-mood-done').className = `btn-main ${currentBrew.btnClass}`;
+  document.getElementById('btn-mood-done').disabled = true;
+}
+
+function selectMood(el) {
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('btn-mood-done').disabled = false;
+}
+
+// ── Finish ──
+function finishRitual() {
+  triggerSparkles(20);
+  goTo('screen-reward');
+}
+
+function setupReward() {
+  if (!currentBrew) return;
+  document.getElementById('sigil-display').textContent = currentBrew.sigil;
+  document.getElementById('sigil-name').innerHTML = `Steam-sigil: <em>${currentBrew.sigilName}</em>`;
+  document.getElementById('reward-sub').innerHTML = `You showed up for yourself today.<br>That's the whole magic.`;
+  document.querySelector('#screen-reward .btn-main').className = `btn-main ${currentBrew.btnClass}`;
+}
+
+// ── Sparkles ──
+function triggerSparkles(count = 12) {
+  const container = document.getElementById('sparkles');
+  const colors = ['#7BAF7C','#F5A98B','#B89FD8','#F2C46D','#87C4E0','#E07A8C'];
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const sp = document.createElement('div');
+      sp.className = 'sparkle';
+      sp.style.left = (20 + Math.random() * 60) + '%';
+      sp.style.top = (Math.random() * 60) + '%';
+      sp.style.background = colors[Math.floor(Math.random() * colors.length)];
+      sp.style.animationDelay = (Math.random() * 0.4) + 's';
+      sp.style.transform = `rotate(${Math.random()*180}deg)`;
+      container.appendChild(sp);
+      setTimeout(() => sp.remove(), 1600);
+    }, i * 60);
+  }
+}
+
+function sparkleAndShare() {
+  triggerSparkles(30);
+  setTimeout(() => alert('📱 In the real app, this would generate a beautiful shareable card for your sigil! Your WhimsiTea community would love it. 🫖✨'), 400);
+}
+
+// ── Reset ──
+function resetApp() {
+  if (breathTimer) clearInterval(breathTimer);
+  if (steepTimer) clearInterval(steepTimer);
+  currentBrew = null;
+  document.querySelectorAll('.brew-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('btn-begin').disabled = true;
+  document.getElementById('btn-begin').className = 'btn-main btn-sage';
+  document.querySelectorAll('#breath-dots .bdot').forEach(d => d.classList.remove('done'));
+  goTo('screen-pick');
+}
+</script>
+</body>
+</html>
