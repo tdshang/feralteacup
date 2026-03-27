@@ -4,1029 +4,960 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Brew & Breathe — WhimsiTea</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta property="og:title" content="Brew & Breathe — A WhimsiTea Ritual">
+<meta property="og:description" content="A five-act ritual for returning to yourself. Set your intention. Brew your tea. Breathe. Find the magic.">
+<meta property="og:image" content="https://tdshang.github.io/feralteacup/brew-breathe-preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://tdshang.github.io/feralteacup/brew-and-breathe.html">
+<meta name="twitter:card" content="summary_large_image">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --sage: #7BAF7C;
-    --sage-light: #C4DDB5;
-    --sage-pale: #EDF5E5;
-    --peach: #F5A98B;
-    --peach-light: #FDE4D6;
-    --peach-pale: #FFF3ED;
-    --lavender: #B89FD8;
-    --lavender-light: #E2D6F5;
-    --lavender-pale: #F3EEFF;
-    --honey: #F2C46D;
-    --honey-light: #FCE9B3;
-    --honey-pale: #FFFBEF;
-    --sky: #87C4E0;
-    --sky-light: #D0ECF9;
-    --sky-pale: #F0F9FF;
-    --rose: #E07A8C;
-    --ink: #2C2535;
-    --ink-soft: #4A4255;
-    --mist: #F8F6FF;
-    --white: #FFFFFF;
-    --radius: 20px;
-    --radius-sm: 12px;
-  }
+:root{
+  --ink:#1a1208;--parchment:#f7f3ec;--parchment-dark:#ede5d0;
+  --cream:#faf7f2;--gold:#b8960c;--gold-light:#e8c84a;
+  --accent:#6a4a8a;--accent-light:#f0eaf8;--accent-mid:#c4a8e0;
+  --radius:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── Starfield background ── */
+body{
+  font-family:'Lato',sans-serif;
+  background:#0d0d1a;
+  color:var(--parchment);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+#starfield{position:fixed;inset:0;z-index:0;pointer-events:none;}
+#bg-glow{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 60%,rgba(106,74,138,0.25) 0%,transparent 70%);
+  transition:background 2s ease;
+}
+.wrap{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 20px 60px;}
 
-  body {
-    font-family: 'Nunito', sans-serif;
-    background: var(--mist);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-x: hidden;
-  }
+/* ── Steps ── */
+.step{display:none;}
+.step.active{display:block;animation:fadeUp .5s ease forwards;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-  /* Floating background blobs */
-  .bg-blobs {
-    position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
-  }
-  .blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(60px);
-    opacity: 0.35;
-    animation: float-blob 12s ease-in-out infinite;
-  }
-  .blob-1 { width: 320px; height: 320px; background: #C4DDB5; top: -80px; left: -80px; animation-delay: 0s; }
-  .blob-2 { width: 280px; height: 280px; background: #FDE4D6; top: 30%; right: -60px; animation-delay: -4s; }
-  .blob-3 { width: 240px; height: 240px; background: #E2D6F5; bottom: -60px; left: 20%; animation-delay: -8s; }
-  .blob-4 { width: 200px; height: 200px; background: #FCE9B3; bottom: 10%; right: 15%; animation-delay: -2s; }
+/* ── Header ── */
+.site-header{text-align:center;padding:48px 0 36px;}
+.brand-mark{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.18em;color:rgba(232,200,74,.6);margin-bottom:14px;}
+.site-title{font-family:'Cinzel',serif;font-size:clamp(26px,6vw,40px);font-weight:600;color:var(--parchment);line-height:1.2;margin-bottom:8px;}
+.site-title em{font-style:italic;font-family:'Playfair Display',serif;color:var(--gold-light);}
+.gold-divider{display:flex;align-items:center;gap:10px;justify-content:center;margin:14px 0;}
+.gold-divider::before,.gold-divider::after{content:'';flex:1;max-width:60px;height:1px;background:linear-gradient(to right,transparent,rgba(184,150,12,.4),transparent);}
+.gold-divider span{color:rgba(184,150,12,.5);font-size:12px;}
+.site-sub{font-size:14px;color:var(--parchment);opacity:.55;font-style:italic;line-height:1.7;}
 
-  @keyframes float-blob {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(12px, -18px) scale(1.04); }
-    66% { transform: translate(-8px, 10px) scale(0.97); }
-  }
+/* ── Act label ── */
+.act-label{text-align:center;margin-bottom:28px;}
+.act-eyebrow{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(232,200,74,.6);margin-bottom:6px;}
+.act-title{font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:var(--parchment);}
 
-  /* App shell */
-  .app {
-    position: relative; z-index: 1;
-    width: 100%; max-width: 420px;
-    padding: 16px;
-  }
+/* ── Glass card ── */
+.glass{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius);
+  backdrop-filter:blur(12px);
+  padding:24px;
+  margin-bottom:16px;
+}
 
-  /* Header */
-  .header {
-    text-align: center;
-    margin-bottom: 24px;
-  }
-  .logo-mark {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--white);
-    border-radius: 50px;
-    padding: 8px 18px;
-    box-shadow: 0 2px 16px rgba(123,175,124,0.18);
-    margin-bottom: 8px;
-  }
-  .logo-cup {
-    font-size: 22px;
-  }
-  .logo-text {
-    font-family: 'Playfair Display', serif;
-    font-size: 15px;
-    color: var(--ink);
-    letter-spacing: 0.02em;
-  }
-  .tagline {
-    font-size: 12px;
-    color: var(--ink-soft);
-    opacity: 0.7;
-    letter-spacing: 0.04em;
-  }
+/* ── Intention grid ── */
+.intention-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}.intention-grid .intention-card:last-child:nth-child(odd){grid-column:1 / -1;max-width:50%;margin:0 auto;width:100%;}
+.intention-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+  border-radius:14px;padding:18px 14px;text-align:center;cursor:pointer;
+  transition:all .25s;
+}
+.intention-card:hover{background:rgba(255,255,255,.08);transform:translateY(-3px);}
+.intention-card.selected{border-color:var(--accent-mid);background:rgba(106,74,138,.2);}
+.int-emoji{font-size:30px;display:block;margin-bottom:8px;}
+.int-label{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.04em;color:var(--parchment);margin-bottom:4px;}
+.int-desc{font-size:11px;color:var(--parchment);opacity:.5;font-style:italic;line-height:1.4;}
 
-  /* Screen management */
-  .screen { display: none; }
-  .screen.active { display: block; }
+/* ── Buttons ── */
+.btn-main{
+  width:100%;padding:16px;
+  background:linear-gradient(135deg,var(--accent),#3a1a6a);
+  color:white;border:none;border-radius:50px;
+  font-family:'Cinzel',serif;font-size:14px;font-weight:600;letter-spacing:.06em;
+  cursor:pointer;transition:all .25s;
+  box-shadow:0 4px 24px rgba(106,74,138,.3);
+}
+.btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(106,74,138,.4);}
+.btn-main:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-ghost{
+  width:100%;padding:14px;
+  background:transparent;color:var(--parchment);opacity:.6;
+  border:1px solid rgba(255,255,255,.15);border-radius:50px;
+  font-family:'Cinzel',serif;font-size:13px;letter-spacing:.05em;
+  cursor:pointer;transition:all .2s;margin-top:10px;
+}
+.btn-ghost:hover{opacity:1;border-color:rgba(255,255,255,.3);}
 
-  /* ── SCREEN 1: Brew Picker ── */
-  .pick-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 26px;
-    color: var(--ink);
-    text-align: center;
-    margin-bottom: 6px;
-    line-height: 1.3;
-  }
-  .pick-sub {
-    font-size: 13px;
-    color: var(--ink-soft);
-    text-align: center;
-    margin-bottom: 24px;
-    opacity: 0.75;
-  }
+/* ── Recipe card ── */
+.recipe-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--parchment);margin-bottom:4px;}
+.recipe-sub{font-size:12px;color:var(--parchment);opacity:.55;font-style:italic;margin-bottom:14px;}
+.recipe-story{font-size:14px;color:var(--parchment);opacity:.75;line-height:1.75;font-style:italic;margin-bottom:16px;padding:14px;background:rgba(255,255,255,.03);border-radius:10px;border-left:2px solid var(--accent-mid);}
+.ingredient-list{list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:16px;}
+.ingredient-list li{font-size:13px;color:var(--parchment);opacity:.8;padding-left:18px;position:relative;line-height:1.5;}
+.ingredient-list li::before{content:'✦';position:absolute;left:0;color:var(--gold);font-size:9px;top:3px;}
 
-  .brew-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
+/* Steep timer */
+.steep-options{display:flex;gap:8px;margin-bottom:20px;}
+.steep-btn{
+  flex:1;padding:10px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);border-radius:8px;
+  font-family:'Cinzel',serif;font-size:12px;color:var(--parchment);
+  cursor:pointer;transition:all .2s;text-align:center;
+}
+.steep-btn:hover,.steep-btn.active{background:rgba(106,74,138,.3);border-color:var(--accent-mid);}
+.steep-timer-display{text-align:center;margin-bottom:20px;}
+.timer-ring{width:120px;height:120px;margin:0 auto 14px;position:relative;}
+.timer-ring svg{transform:rotate(-90deg);}
+.timer-ring-bg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:6;}
+.timer-ring-fill{fill:none;stroke:var(--accent-mid);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .5s linear;}
+.timer-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.timer-mins{font-family:'Cinzel',serif;font-size:22px;color:var(--parchment);}
+.timer-label{font-size:10px;color:var(--parchment);opacity:.5;letter-spacing:.1em;text-transform:uppercase;}
 
-  .brew-card {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 20px 16px 16px;
-    cursor: pointer;
-    border: 2.5px solid transparent;
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-    position: relative;
-    overflow: hidden;
-    text-align: center;
-  }
-  .brew-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    border-radius: 4px 4px 0 0;
-  }
-  .brew-card.sage::before { background: var(--sage); }
-  .brew-card.peach::before { background: var(--peach); }
-  .brew-card.lavender::before { background: var(--lavender); }
-  .brew-card.honey::before { background: var(--honey); }
+/* Teacup steam animation */
+.teacup-wrap{text-align:center;margin:20px 0;}
+.teacup-svg{width:140px;height:140px;margin:0 auto;display:block;}
+.steam-line{animation:steam 2.5s ease-in-out infinite;transform-origin:bottom center;}
+.steam-line:nth-child(2){animation-delay:.4s;}
+.steam-line:nth-child(3){animation-delay:.8s;}
+@keyframes steam{
+  0%{opacity:0;transform:translateY(0) scaleX(1);}
+  30%{opacity:.7;}
+  70%{opacity:.4;transform:translateY(-20px) scaleX(1.2);}
+  100%{opacity:0;transform:translateY(-32px) scaleX(.8);}
+}
 
-  .brew-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,0.10); }
-  .brew-card.selected.sage { border-color: var(--sage); background: var(--sage-pale); }
-  .brew-card.selected.peach { border-color: var(--peach); background: var(--peach-pale); }
-  .brew-card.selected.lavender { border-color: var(--lavender); background: var(--lavender-pale); }
-  .brew-card.selected.honey { border-color: var(--honey); background: var(--honey-pale); }
+/* ── Breathing section ── */
+.breath-wrap{text-align:center;padding:10px 0 20px;}
+.breath-phase{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-light);opacity:.8;margin-bottom:6px;min-height:20px;transition:opacity .3s;}
+.breath-count{font-family:'Playfair Display',serif;font-size:48px;color:var(--parchment);margin-bottom:16px;min-height:60px;line-height:1;}
+.breath-shape-wrap{width:220px;height:220px;margin:0 auto 20px;position:relative;display:flex;align-items:center;justify-content:center;}
+.breath-shape-wrap svg{position:absolute;inset:0;width:100%;height:100%;}
+.breath-rounds{font-size:12px;color:var(--parchment);opacity:.45;font-family:'Cinzel',serif;letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px;}
 
-  .brew-emoji { font-size: 36px; display: block; margin-bottom: 8px; }
-  .brew-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 15px;
-    color: var(--ink);
-    margin-bottom: 4px;
-  }
-  .brew-mood {
-    font-size: 11px;
-    color: var(--ink-soft);
-    opacity: 0.7;
-    line-height: 1.4;
-  }
-  .brew-time {
-    display: inline-block;
-    margin-top: 8px;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 20px;
-  }
-  .sage .brew-time { background: var(--sage-light); color: #3A7040; }
-  .peach .brew-time { background: var(--peach-light); color: #9A4A28; }
-  .lavender .brew-time { background: var(--lavender-light); color: #5C3A8A; }
-  .honey .brew-time { background: var(--honey-light); color: #7A5B10; }
+/* ── Affirmation ── */
+.affirmation-wrap{text-align:center;padding:20px 10px;}
+.affirmation-text{font-family:'Playfair Display',serif;font-size:20px;font-style:italic;color:var(--parchment);line-height:1.7;opacity:0;transition:opacity .8s;}
+.affirmation-text.visible{opacity:1;}
 
-  /* ── CTA Button ── */
-  .btn-main {
-    width: 100%;
-    padding: 16px;
-    border-radius: 50px;
-    border: none;
-    font-family: 'Nunito', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-    letter-spacing: 0.02em;
-  }
-  .btn-main:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
-  .btn-main:active { transform: scale(0.98); }
-  .btn-main:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
-  .btn-sage { background: var(--sage); color: white; }
-  .btn-peach { background: var(--peach); color: white; }
-  .btn-lavender { background: var(--lavender); color: white; }
-  .btn-honey { background: var(--honey); color: #4a3500; }
-  .btn-ink { background: var(--ink); color: white; }
+/* ── Magic finding ── */
+.magic-prompt{
+  font-family:'Playfair Display',serif;font-size:17px;font-style:italic;
+  color:var(--parchment);line-height:1.75;text-align:center;
+  padding:20px;margin-bottom:16px;
+  background:rgba(255,255,255,.03);border-radius:12px;
+  border:1px solid rgba(255,255,255,.06);
+}
+.self-care-card{
+  background:rgba(106,74,138,.15);border:1px solid rgba(106,74,138,.3);
+  border-radius:12px;padding:18px;margin-bottom:16px;
+}
+.self-care-label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);opacity:.7;margin-bottom:8px;}
+.self-care-text{font-size:14px;color:var(--parchment);opacity:.8;line-height:1.65;}
 
-  /* ── SCREEN 2: Breathe ── */
-  .breathe-wrap {
-    text-align: center;
-    padding: 8px 0 24px;
-  }
-  .step-label {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    opacity: 0.6;
-    margin-bottom: 6px;
-  }
-  .breathe-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 24px;
-    color: var(--ink);
-    margin-bottom: 4px;
-  }
-  .breathe-sub {
-    font-size: 13px;
-    color: var(--ink-soft);
-    opacity: 0.7;
-    margin-bottom: 32px;
-  }
+.reflection-wrap{margin-bottom:20px;}
+.reflection-label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);opacity:.7;margin-bottom:8px;}
+.reflection-q{font-family:'Playfair Display',serif;font-size:15px;font-style:italic;color:var(--parchment);opacity:.75;line-height:1.6;margin-bottom:10px;}
+.reflection-input{
+  width:100%;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);border-radius:10px;
+  padding:14px;font-family:'Lato',sans-serif;font-size:14px;
+  color:var(--parchment);resize:vertical;min-height:90px;outline:none;
+  transition:border-color .2s;
+}
+.reflection-input:focus{border-color:var(--accent-mid);}
+.reflection-input::placeholder{color:rgba(247,243,236,.25);font-style:italic;}
 
-  .breath-ring-wrap {
-    position: relative;
-    width: 200px;
-    height: 200px;
-    margin: 0 auto 24px;
-  }
-  .breath-ring-bg {
-    position: absolute; inset: 0;
-    border-radius: 50%;
-    background: var(--white);
-    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-  }
-  .breath-circle {
-    position: absolute;
-    border-radius: 50%;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%) scale(0.45);
-    transition: transform 0.1s linear;
-    width: 160px;
-    height: 160px;
-    opacity: 0.85;
-  }
-  .breath-instruction {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    z-index: 2;
-    pointer-events: none;
-  }
-  .breath-word {
-    font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    color: var(--white);
-    font-style: italic;
-    display: block;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.2);
-  }
-  .breath-count {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--white);
-    display: block;
-    text-shadow: 0 1px 6px rgba(0,0,0,0.25);
-    line-height: 1;
-    margin-top: 4px;
-  }
+/* ── Closing ── */
+.closing-center{text-align:center;padding:20px 0;}
+.closing-title{font-family:'Cinzel',serif;font-size:18px;font-weight:600;color:var(--parchment);margin-bottom:10px;}
+.closing-text{font-size:14px;color:var(--parchment);opacity:.6;line-height:1.7;margin-bottom:24px;font-style:italic;}
+.btn-shop{
+  display:inline-block;padding:14px 32px;
+  background:linear-gradient(135deg,rgba(184,150,12,.2),rgba(184,150,12,.05));
+  border:1px solid rgba(184,150,12,.4);
+  color:var(--gold-light);font-family:'Cinzel',serif;font-size:13px;
+  letter-spacing:.08em;border-radius:50px;text-decoration:none;
+  transition:all .2s;margin-bottom:10px;display:block;text-align:center;
+}
+.btn-shop:hover{background:linear-gradient(135deg,rgba(184,150,12,.3),rgba(184,150,12,.1));}
+.btn-community{
+  display:block;text-align:center;padding:14px 32px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  color:var(--parchment);opacity:.7;font-family:'Cinzel',serif;font-size:12px;
+  letter-spacing:.08em;border-radius:50px;text-decoration:none;transition:all .2s;
+}
+.btn-community:hover{opacity:1;}
+.share-btn{
+  width:100%;padding:13px;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);border-radius:50px;
+  color:var(--parchment);font-family:'Cinzel',serif;font-size:12px;
+  letter-spacing:.06em;cursor:pointer;transition:all .2s;margin-bottom:10px;
+}
+.share-btn:hover{background:rgba(255,255,255,.1);}
 
-  .breath-pattern {
-    font-size: 13px;
-    color: var(--ink-soft);
-    opacity: 0.65;
-    margin-bottom: 28px;
-  }
-  .breath-pattern span {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 20px;
-    background: var(--white);
-    margin: 0 2px;
-    font-weight: 600;
-  }
+.page-footer{text-align:center;font-size:11px;color:var(--parchment);opacity:.2;padding-top:24px;border-top:1px solid rgba(255,255,255,.06);}
 
-  /* progress dots */
-  .breath-dots {
-    display: flex; justify-content: center; gap: 8px; margin-bottom: 28px;
-  }
-  .bdot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--ink-soft); opacity: 0.2;
-    transition: opacity 0.3s, transform 0.3s;
-  }
-  .bdot.done { opacity: 0.9; transform: scale(1.2); }
+/* Sound toggle */
+.sound-toggle{
+  position:fixed;top:16px;right:16px;z-index:100;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  border-radius:50px;padding:8px 14px;font-family:'Cinzel',serif;
+  font-size:11px;color:var(--parchment);opacity:.7;cursor:pointer;
+  transition:all .2s;
+}
+.sound-toggle:hover{opacity:1;}
 
-  /* ── SCREEN 3: Steep Timer ── */
-  .steep-wrap { text-align: center; padding: 8px 0 24px; }
+/* Progress dots */
+.progress-dots{display:flex;justify-content:center;gap:8px;margin-bottom:28px;}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);transition:all .4s;}
+.dot.active{background:var(--gold-light);transform:scale(1.2);}
+.dot.done{background:rgba(232,200,74,.4);}
 
-  .kettle-scene {
-    width: 120px; height: 120px;
-    margin: 0 auto 16px;
-    position: relative;
-  }
-  .kettle-svg { width: 100%; height: 100%; }
-
-  .steam-line {
-    stroke-dasharray: 8 4;
-    stroke-dashoffset: 0;
-    animation: steam-rise 1.8s ease-in-out infinite;
-    opacity: 0;
-  }
-  .steam-line:nth-child(2) { animation-delay: 0.4s; }
-  .steam-line:nth-child(3) { animation-delay: 0.8s; }
-
-  @keyframes steam-rise {
-    0% { opacity: 0; stroke-dashoffset: 0; transform: translateY(0); }
-    30% { opacity: 0.7; }
-    80% { opacity: 0.3; }
-    100% { opacity: 0; stroke-dashoffset: -24; transform: translateY(-8px); }
-  }
-
-  .steep-timer-ring {
-    position: relative;
-    width: 160px; height: 160px;
-    margin: 0 auto 8px;
-  }
-  .steep-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-  .steep-track { fill: none; stroke: #E8E4F0; stroke-width: 6; }
-  .steep-progress {
-    fill: none; stroke-width: 6;
-    stroke-linecap: round;
-    transition: stroke-dashoffset 1s linear;
-  }
-  .steep-center {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
-  .steep-time-big {
-    font-family: 'Playfair Display', serif;
-    font-size: 32px; font-weight: 700;
-    color: var(--ink);
-    line-height: 1;
-  }
-  .steep-label-sm {
-    font-size: 11px; color: var(--ink-soft); opacity: 0.65;
-    margin-top: 2px;
-  }
-
-  .steep-tip {
-    background: var(--white);
-    border-radius: var(--radius-sm);
-    padding: 12px 16px;
-    margin: 16px 0 24px;
-    font-size: 13px;
-    color: var(--ink-soft);
-    line-height: 1.5;
-    font-style: italic;
-  }
-  .steep-tip::before { content: '✨ '; }
-
-  /* ── SCREEN 4: Affirmation ── */
-  .affirm-wrap { text-align: center; padding: 8px 0 24px; }
-  .affirm-card {
-    border-radius: var(--radius);
-    padding: 28px 24px;
-    margin-bottom: 20px;
-    position: relative;
-    overflow: hidden;
-  }
-  .affirm-card::after {
-    content: '';
-    position: absolute;
-    width: 160px; height: 160px;
-    border-radius: 50%;
-    right: -40px; bottom: -40px;
-    opacity: 0.15;
-  }
-  .affirm-card.sage { background: var(--sage-light); }
-  .affirm-card.sage::after { background: var(--sage); }
-  .affirm-card.peach { background: var(--peach-light); }
-  .affirm-card.peach::after { background: var(--peach); }
-  .affirm-card.lavender { background: var(--lavender-light); }
-  .affirm-card.lavender::after { background: var(--lavender); }
-  .affirm-card.honey { background: var(--honey-light); }
-  .affirm-card.honey::after { background: var(--honey); }
-
-  .affirm-release-label {
-    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
-    text-transform: uppercase; opacity: 0.6; margin-bottom: 8px;
-    color: var(--ink);
-  }
-  .affirm-release-text {
-    font-family: 'Playfair Display', serif;
-    font-size: 19px; color: var(--ink);
-    line-height: 1.4; margin-bottom: 20px;
-    font-style: italic;
-  }
-  .affirm-divider {
-    width: 40px; height: 2px;
-    border-radius: 2px;
-    margin: 0 auto 20px;
-    opacity: 0.4;
-  }
-  .affirm-receive-label {
-    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
-    text-transform: uppercase; opacity: 0.6; margin-bottom: 8px;
-    color: var(--ink);
-  }
-  .affirm-receive-text {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px; color: var(--ink);
-    line-height: 1.4; font-weight: 700;
-  }
-
-  /* ── SCREEN 5: Mood Log ── */
-  .mood-wrap { text-align: center; padding: 8px 0 24px; }
-  .mood-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 24px; color: var(--ink);
-    margin-bottom: 6px;
-  }
-  .mood-sub {
-    font-size: 13px; color: var(--ink-soft); opacity: 0.7;
-    margin-bottom: 24px;
-  }
-  .mood-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 10px; margin-bottom: 20px;
-  }
-  .mood-btn {
-    background: var(--white);
-    border: 2px solid transparent;
-    border-radius: var(--radius-sm);
-    padding: 14px 8px;
-    cursor: pointer;
-    transition: all 0.18s;
-    text-align: center;
-  }
-  .mood-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-  .mood-btn.selected { border-color: var(--sage); background: var(--sage-pale); }
-  .mood-emoji { font-size: 26px; display: block; margin-bottom: 4px; }
-  .mood-word { font-size: 11px; font-weight: 600; color: var(--ink-soft); }
-
-  /* ── SCREEN 6: Reward ── */
-  .reward-wrap { text-align: center; padding: 8px 0 24px; }
-
-  .sigil-display {
-    width: 140px; height: 140px;
-    margin: 0 auto 20px;
-    background: var(--white);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 6px 32px rgba(0,0,0,0.1);
-    animation: sigil-appear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    font-size: 64px;
-  }
-
-  @keyframes sigil-appear {
-    0% { transform: scale(0.3) rotate(-20deg); opacity: 0; }
-    100% { transform: scale(1) rotate(0deg); opacity: 1; }
-  }
-
-  .reward-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 26px; color: var(--ink);
-    margin-bottom: 8px;
-  }
-  .reward-sub {
-    font-size: 14px; color: var(--ink-soft); opacity: 0.75;
-    margin-bottom: 8px; line-height: 1.5;
-  }
-  .streak-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: var(--honey-light);
-    color: #7A5B10; font-size: 13px; font-weight: 700;
-    padding: 6px 16px; border-radius: 50px;
-    margin-bottom: 24px;
-  }
-
-  .sigil-name {
-    font-size: 13px; color: var(--ink-soft); opacity: 0.65;
-    margin-bottom: 24px; font-style: italic;
-  }
-
-  .btn-secondary {
-    background: transparent;
-    border: 2px solid var(--ink);
-    color: var(--ink);
-    width: 100%;
-    padding: 14px;
-    border-radius: 50px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 15px; font-weight: 700;
-    cursor: pointer;
-    transition: all 0.15s;
-    margin-top: 10px;
-    opacity: 0.5;
-  }
-  .btn-secondary:hover { opacity: 0.8; transform: translateY(-1px); }
-
-  /* ── White card wrapper ── */
-  .card-wrap {
-    background: var(--white);
-    border-radius: 28px;
-    padding: 24px 20px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.08);
-  }
-
-  /* ── Transitions ── */
-  .screen-enter { animation: fadeSlideIn 0.35s ease forwards; }
-  @keyframes fadeSlideIn {
-    from { opacity: 0; transform: translateY(14px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── Sparkles ── */
-  .sparkle-container {
-    position: fixed; inset: 0; pointer-events: none; z-index: 100; overflow: hidden;
-  }
-  .sparkle {
-    position: absolute;
-    width: 8px; height: 8px;
-    border-radius: 2px;
-    animation: sparkle-fall 1.2s ease-out forwards;
-  }
-  @keyframes sparkle-fall {
-    0% { transform: translateY(-20px) rotate(0deg) scale(1); opacity: 1; }
-    100% { transform: translateY(100px) rotate(180deg) scale(0); opacity: 0; }
-  }
+@media(max-width:480px){.intention-grid{grid-template-columns:1fr;}.steep-options{flex-wrap:wrap;}}
 </style>
 </head>
 <body>
+<canvas id="starfield"></canvas>
+<div id="bg-glow"></div>
+<button class="sound-toggle" id="sound-toggle" onclick="toggleSound()">🔔 Sound On</button>
 
-<div class="bg-blobs">
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-  <div class="blob blob-3"></div>
-  <div class="blob blob-4"></div>
+<div class="wrap">
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="brand-mark">✦ WhimsiTea ✦</div>
+  <h1 class="site-title">Brew <em>&</em> Breathe</h1>
+  <div class="gold-divider"><span>✦</span></div>
+  <p class="site-sub">A five-act ritual for returning to yourself.<br>Five minutes. One cup. One breath at a time.</p>
+</header>
+
+<!-- Progress -->
+<div class="progress-dots" id="progress-dots">
+  <div class="dot active" title="Intention"></div>
+  <div class="dot" title="Brew"></div>
+  <div class="dot" title="Breathe"></div>
+  <div class="dot" title="Be"></div>
+  <div class="dot" title="Magic"></div>
 </div>
-<div class="sparkle-container" id="sparkles"></div>
 
-<div class="app">
-  <div class="header">
-    <div class="logo-mark">
-      <span class="logo-cup">🫖</span>
-      <span class="logo-text">Brew & Breathe</span>
-    </div>
-    <div class="tagline">a whimsitea ritual</div>
+<!-- ACT 1: INTENTION -->
+<div class="step active" id="step-intention">
+  <div class="act-label">
+    <div class="act-eyebrow">Act One</div>
+    <div class="act-title">Set Your Intention</div>
+  </div>
+  <div class="glass" style="text-align:center;margin-bottom:20px;">
+    <p style="font-size:14px;opacity:.65;font-style:italic;line-height:1.7;">Before the kettle. Before the breath.<br>What does your soul need from this moment?</p>
+  </div>
+  <div class="intention-grid" id="intention-grid"></div>
+  <button class="btn-main" id="btn-to-brew" disabled onclick="goToBrew()">✦ &nbsp; Begin the Ritual &nbsp; ✦</button>
+</div>
+
+<!-- ACT 2: BREW -->
+<div class="step" id="step-brew">
+  <div class="act-label">
+    <div class="act-eyebrow">Act Two</div>
+    <div class="act-title">Brew Your Tea</div>
   </div>
 
-  <!-- SCREEN 1: Pick your brew -->
-  <div class="screen active card-wrap screen-enter" id="screen-pick">
-    <div class="pick-title">What shall we<br><em>brew today?</em></div>
-    <div class="pick-sub">Choose a card that calls to you ✨</div>
-
-    <div class="brew-grid">
-      <div class="brew-card sage" data-brew="sage" onclick="selectBrew(this)">
-        <span class="brew-emoji">🌿</span>
-        <div class="brew-name">Morning Garden</div>
-        <div class="brew-mood">Fresh clarity, new beginnings</div>
-        <span class="brew-time">3 min steep</span>
-      </div>
-      <div class="brew-card peach" data-brew="peach" onclick="selectBrew(this)">
-        <span class="brew-emoji">🌸</span>
-        <div class="brew-name">Blossom Heart</div>
-        <div class="brew-mood">Open to joy, soften in</div>
-        <span class="brew-time">4 min steep</span>
-      </div>
-      <div class="brew-card lavender" data-brew="lavender" onclick="selectBrew(this)">
-        <span class="brew-emoji">🔮</span>
-        <div class="brew-name">Twilight Magic</div>
-        <div class="brew-mood">Settle deep, dream awake</div>
-        <span class="brew-time">5 min steep</span>
-      </div>
-      <div class="brew-card honey" data-brew="honey" onclick="selectBrew(this)">
-        <span class="brew-emoji">🍯</span>
-        <div class="brew-name">Golden Hour</div>
-        <div class="brew-mood">Warmth, sweetness, ease</div>
-        <span class="brew-time">4 min steep</span>
-      </div>
-    </div>
-
-    <button class="btn-main btn-sage" id="btn-begin" disabled onclick="goTo('screen-breathe')">
-      Begin the ritual →
-    </button>
+  <div class="glass">
+    <div class="recipe-name" id="brew-name">—</div>
+    <div class="recipe-sub" id="brew-sub">—</div>
+    <div class="recipe-story" id="brew-story">—</div>
+    <ul class="ingredient-list" id="brew-ingredients"></ul>
   </div>
 
-  <!-- SCREEN 2: Breathe -->
-  <div class="screen card-wrap" id="screen-breathe">
-    <div class="breathe-wrap">
-      <div class="step-label">Step 1 of 4</div>
-      <div class="breathe-title">One minute of calm</div>
-      <div class="breathe-sub">Follow the circle. Put the kettle on. 🫖</div>
-
-      <div class="breath-ring-wrap">
-        <div class="breath-ring-bg"></div>
-        <div class="breath-circle" id="breath-circle"></div>
-        <div class="breath-instruction">
-          <span class="breath-word" id="breath-word">inhale</span>
-          <span class="breath-count" id="breath-count">4</span>
-        </div>
-      </div>
-
-      <div class="breath-pattern">
-        <span id="bp-in">inhale 4</span> · <span id="bp-hold">hold 7</span> · <span id="bp-out">exhale 8</span>
-      </div>
-
-      <div class="breath-dots" id="breath-dots">
-        <div class="bdot"></div>
-        <div class="bdot"></div>
-        <div class="bdot"></div>
-      </div>
-
-      <button class="btn-main btn-sage" id="btn-next-breathe" disabled onclick="goTo('screen-steep')">
-        Kettle's on! → Set intention
-      </button>
+  <div class="glass">
+    <p style="font-size:13px;opacity:.6;text-align:center;margin-bottom:14px;font-style:italic;">Choose your steep time</p>
+    <div class="steep-options" id="steep-options">
+      <div class="steep-btn" onclick="setSteep(2,this)">2 min<br><span style="font-size:10px;opacity:.6;">delicate</span></div>
+      <div class="steep-btn" onclick="setSteep(3,this)">3 min<br><span style="font-size:10px;opacity:.6;">classic</span></div>
+      <div class="steep-btn" onclick="setSteep(5,this)">5 min<br><span style="font-size:10px;opacity:.6;">deep</span></div>
     </div>
-  </div>
 
-  <!-- SCREEN 3: Steep + Intention -->
-  <div class="screen card-wrap" id="screen-steep">
-    <div class="steep-wrap">
-      <div class="step-label">Step 2 of 4</div>
-      <div class="breathe-title" id="steep-brew-name">Steeping...</div>
-      <div class="breathe-sub" style="margin-bottom:20px">While your tea steeps, set a tiny intention.</div>
+    <div class="teacup-wrap">
+      <svg class="teacup-svg" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+        <!-- Steam lines -->
+        <path class="steam-line" d="M 55 45 Q 50 35 55 25 Q 60 15 55 8" stroke="rgba(200,180,255,0.6)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path class="steam-line" d="M 70 42 Q 65 32 70 22 Q 75 12 70 5" stroke="rgba(200,180,255,0.6)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path class="steam-line" d="M 85 45 Q 80 35 85 25 Q 90 15 85 8" stroke="rgba(200,180,255,0.6)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- Cup body -->
+        <path d="M 30 55 L 38 105 Q 70 115 102 105 L 110 55 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+        <!-- Tea surface -->
+        <ellipse cx="70" cy="57" rx="40" ry="8" fill="rgba(106,74,138,0.4)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+        <!-- Saucer -->
+        <ellipse cx="70" cy="108" rx="48" ry="7" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+        <!-- Handle -->
+        <path d="M 108 65 Q 125 65 125 82 Q 125 99 108 99" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
 
-      <!-- Kettle SVG -->
-      <div class="kettle-scene">
-        <svg class="kettle-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- Steam lines -->
-          <path class="steam-line" d="M52 30 Q48 22 52 14" stroke="#B89FD8" stroke-width="2.5" stroke-linecap="round"/>
-          <path class="steam-line" d="M62 28 Q66 20 62 12" stroke="#87C4E0" stroke-width="2.5" stroke-linecap="round"/>
-          <path class="steam-line" d="M72 30 Q68 22 72 14" stroke="#F5A98B" stroke-width="2.5" stroke-linecap="round"/>
-          <!-- Kettle body -->
-          <rect x="25" y="40" width="70" height="55" rx="18" fill="#F8F4FF" stroke="#D8D0EE" stroke-width="2"/>
-          <!-- Color fill based on brew -->
-          <rect id="kettle-fill" x="27" y="72" width="66" height="21" rx="0" fill="#C4DDB5" opacity="0.6"/>
-          <rect x="27" y="70" width="66" height="3" rx="1" fill="#C4DDB5" opacity="0.4"/>
-          <!-- Spout -->
-          <path d="M95 62 Q112 58 108 48 Q104 40 95 44" fill="#F0EBF8" stroke="#D8D0EE" stroke-width="2"/>
-          <!-- Handle -->
-          <path d="M25 55 Q10 60 10 75 Q10 90 25 85" stroke="#D8D0EE" stroke-width="3" stroke-linecap="round" fill="none"/>
-          <!-- Lid -->
-          <rect x="40" y="36" width="40" height="10" rx="5" fill="#EEE8FF" stroke="#D8D0EE" stroke-width="2"/>
-          <circle cx="60" cy="34" r="4" fill="#B89FD8"/>
-          <!-- Shine -->
-          <ellipse cx="70" cy="58" rx="8" ry="4" fill="white" opacity="0.4" transform="rotate(-15 70 58)"/>
+    <div class="steep-timer-display" id="timer-display" style="display:none;">
+      <div class="timer-ring">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle class="timer-ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="timer-ring-fill" id="timer-fill" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="0"/>
         </svg>
-      </div>
-
-      <!-- Steep ring timer -->
-      <div class="steep-timer-ring">
-        <svg class="steep-svg" viewBox="0 0 160 160">
-          <circle class="steep-track" cx="80" cy="80" r="68"/>
-          <circle class="steep-progress" id="steep-progress-circle" cx="80" cy="80" r="68"
-            stroke="#7BAF7C"
-            stroke-dasharray="427" stroke-dashoffset="0"/>
-        </svg>
-        <div class="steep-center">
-          <div class="steep-time-big" id="steep-countdown">3:00</div>
-          <div class="steep-label-sm">steeping</div>
+        <div class="timer-text">
+          <div class="timer-mins" id="timer-mins">—</div>
+          <div class="timer-label">steeping</div>
         </div>
       </div>
-
-      <div class="steep-tip" id="steep-tip">Notice one thing you're grateful for right now — however small.</div>
-
-      <button class="btn-main btn-sage" id="btn-next-steep" disabled onclick="goTo('screen-affirm')">
-        Tea is ready ✨
-      </button>
     </div>
+
+    <button class="btn-main" id="btn-start-steep" disabled onclick="startSteep()">✦ &nbsp; Start Steeping &nbsp; ✦</button>
+    <button class="btn-main" id="btn-skip-steep" style="display:none;margin-top:10px;" onclick="goToBreathe()">✦ &nbsp; Begin Breathing &nbsp; ✦</button>
+  </div>
+  <button class="btn-ghost" onclick="goBack('step-intention')">← Change intention</button>
+</div>
+
+<!-- ACT 3: BREATHE -->
+<div class="step" id="step-breathe">
+  <div class="act-label">
+    <div class="act-eyebrow">Act Three</div>
+    <div class="act-title">Breathe</div>
+  </div>
+  <div class="glass" style="text-align:center;margin-bottom:8px;">
+    <p style="font-size:13px;opacity:.6;font-style:italic;line-height:1.7;">Follow the shape.<br>4 counts in · 4 hold · 4 out · 4 hold.<br>Four rounds to arrive in your body.</p>
+  </div>
+  <div class="breath-wrap">
+    <div class="breath-phase" id="breath-phase">Ready</div>
+    <div class="breath-count" id="breath-count"></div>
+    <div class="breath-shape-wrap" id="breath-shape-wrap"></div>
+    <div class="breath-rounds" id="breath-rounds">Round 1 of 4</div>
+  </div>
+  <button class="btn-main" id="btn-start-breathe" onclick="startBreathing()">✦ &nbsp; Begin Breathing &nbsp; ✦</button>
+  <button class="btn-main" id="btn-to-be" style="display:none;" onclick="goToBe()">✦ &nbsp; Continue &nbsp; ✦</button>
+</div>
+
+<!-- ACT 4: BE -->
+<div class="step" id="step-be">
+  <div class="act-label">
+    <div class="act-eyebrow">Act Four</div>
+    <div class="act-title">Be</div>
+  </div>
+  <div class="glass" style="text-align:center;padding:32px 24px;">
+    <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(232,200,74,.6);margin-bottom:16px;">Your Affirmation</div>
+    <div class="affirmation-text" id="be-affirmation">—</div>
+  </div>
+  <button class="btn-main" id="btn-to-magic" style="margin-top:8px;" onclick="goToMagic()">✦ &nbsp; Find the Magic &nbsp; ✦</button>
+</div>
+
+<!-- ACT 5: MAGIC -->
+<div class="step" id="step-magic">
+  <div class="act-label">
+    <div class="act-eyebrow">Act Five</div>
+    <div class="act-title">The Magic in the Mundane</div>
   </div>
 
-  <!-- SCREEN 4: Affirmation -->
-  <div class="screen card-wrap" id="screen-affirm">
-    <div class="affirm-wrap">
-      <div class="step-label">Step 3 of 4</div>
-      <div class="breathe-title">Release & Receive</div>
-      <div class="breathe-sub" style="margin-bottom:20px">Your cup holds both.</div>
-
-      <div class="affirm-card sage" id="affirm-card">
-        <div class="affirm-release-label">🍃 I release</div>
-        <div class="affirm-release-text" id="affirm-release">"The need to have everything figured out."</div>
-        <div class="affirm-divider sage" id="affirm-divider"></div>
-        <div class="affirm-receive-label">✨ I receive</div>
-        <div class="affirm-receive-text" id="affirm-receive">Permission to simply begin.</div>
-      </div>
-
-      <div class="breathe-sub" style="margin-bottom:20px">Take your first sip. Let it land.</div>
-
-      <button class="btn-main btn-sage" id="btn-next-affirm" onclick="goTo('screen-mood')">
-        Log how I feel →
-      </button>
-    </div>
+  <div class="glass" style="margin-bottom:16px;">
+    <div style="font-family:Cinzel,serif;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(232,200,74,.6);text-align:center;margin-bottom:14px;">Look around you right now</div>
+    <div class="magic-prompt" id="magic-prompt">—</div>
   </div>
 
-  <!-- SCREEN 5: Mood log -->
-  <div class="screen card-wrap" id="screen-mood">
-    <div class="mood-wrap">
-      <div class="step-label">Step 4 of 4</div>
-      <div class="mood-title">How do you feel<br><em>right now?</em></div>
-      <div class="mood-sub">One honest check-in 🌱</div>
-
-      <div class="mood-grid">
-        <div class="mood-btn" onclick="selectMood(this)">
-          <span class="mood-emoji">🌸</span>
-          <div class="mood-word">Soft & Open</div>
-        </div>
-        <div class="mood-btn" onclick="selectMood(this)">
-          <span class="mood-emoji">✨</span>
-          <div class="mood-word">Bright & Clear</div>
-        </div>
-        <div class="mood-btn" onclick="selectMood(this)">
-          <span class="mood-emoji">🌿</span>
-          <div class="mood-word">Calm & Rooted</div>
-        </div>
-        <div class="mood-btn" onclick="selectMood(this)">
-          <span class="mood-emoji">🌊</span>
-          <div class="mood-word">Still Moving</div>
-        </div>
-        <div class="mood-btn" onclick="selectMood(this)">
-          <span class="mood-emoji">🔥</span>
-          <div class="mood-word">Ready & Alive</div>
-        </div>
-        <div class="mood-btn" onclick="selectMood(this)">
-          <span class="mood-emoji">🌙</span>
-          <div class="mood-word">Quiet & Inward</div>
-        </div>
-      </div>
-
-      <button class="btn-main btn-sage" id="btn-mood-done" disabled onclick="finishRitual()">
-        Complete my ritual →
-      </button>
-    </div>
+  <div class="self-care-card">
+    <div class="self-care-label">✦ Your Micro Self-Care</div>
+    <div class="self-care-text" id="self-care-text">—</div>
   </div>
 
-  <!-- SCREEN 6: Reward -->
-  <div class="screen card-wrap" id="screen-reward">
-    <div class="reward-wrap">
-      <div class="sigil-display" id="sigil-display">🌿</div>
-      <div class="reward-title">Ritual complete!</div>
-      <div class="reward-sub" id="reward-sub">You showed up for yourself today.<br>That's the whole magic.</div>
-      <div class="sigil-name" id="sigil-name">Steam-sigil: <em>Morning Garden</em></div>
-      <div class="streak-badge">🔥 Day 1 streak — your cozy chain begins!</div>
-
-      <button class="btn-main btn-sage" onclick="sparkleAndShare()">Share my sigil ✨</button>
-      <button class="btn-secondary" onclick="resetApp()">Brew again tomorrow 🫖</button>
-    </div>
+  <div class="glass reflection-wrap">
+    <div class="reflection-label">✦ A Question to Carry</div>
+    <div class="reflection-q" id="reflection-q">What small beautiful thing did you notice in this moment that you almost missed?</div>
+    <textarea class="reflection-input" placeholder="Write here if you wish... or let the question simply breathe with you."></textarea>
   </div>
 
+  <div class="closing-center">
+    <div class="closing-title">You have arrived.</div>
+    <div class="closing-text" id="closing-text">—</div>
+    <a href="https://whimsitea.com" target="_blank" class="btn-shop">✦ &nbsp; Visit WhimsiTea &nbsp; ✦</a>
+    <a href="https://www.facebook.com/groups/whimsitea" target="_blank" class="btn-community">✦ &nbsp; Share your magic in the community &nbsp; ✦</a>
+    <button class="share-btn" onclick="shareRitual()">✦ &nbsp; Copy to share &nbsp; ✦</button>
+  </div>
+
+  <button class="btn-ghost" onclick="startOver()">✦ Begin again with a new intention</button>
+</div>
+
+<div class="page-footer">WhimsiTea &mdash; enchanted living, one cup at a time &mdash; whimsitea.com</div>
 </div>
 
 <script>
-// ── State ──
-const BREWS = {
-  sage: {
-    name: 'Morning Garden', emoji: '🌿', color: 'sage', btnClass: 'btn-sage',
-    steep: 180, accent: '#7BAF7C', fillColor: '#C4DDB5',
-    tip: 'Notice one thing you\'re grateful for right now — however small.',
-    release: '"The need to have everything figured out."',
-    receive: 'Permission to simply begin.',
-    sigil: '🌱', sigilName: 'Seedling Spark'
+const INTENTIONS = [
+  {
+    id: 'rest',
+    label: 'Rest',
+    emoji: '🌙',
+    desc: 'I am tired. I need to be still.',
+    color: '#6a4a8a',
+    colorLight: '#f0eaf8',
+    colorMid: '#c4a8e0',
+    colorDark: '#3a1a5a',
+    particle: '#c4a8e0',
+    shape: 'cat',
+    recipe: {
+      name: 'Sleepy Moon Chamomile',
+      subtitle: 'A cup made entirely for exhaling',
+      ingredients: ['1 tsp dried chamomile flowers','½ tsp dried lavender buds','¼ tsp lemon balm','1 tsp raw honey','1 cup water at 90°C — just off the boil'],
+      story: 'Chamomile has been lulling humans into gentleness for thousands of years. Lavender whispers to your nervous system in a language older than words. This is not a productive cup. This cup has one job: to give you permission to stop.'
+    },
+    affirmation: 'Rest is not something I earn. It is something I am allowed. I put down what I have been carrying. Just for now.',
+    self_care: 'Roll your shoulders back slowly — once, twice, three times. Let them drop as low as they will go. You have been holding tension you forgot was there.',
+    magic_prompts: [
+      'The quiet in this moment is not empty. It is full of the sound of your own breathing, which has kept you alive every single second of your life without ever asking for thanks.',
+      'Your body is doing dozens of things right now without you asking it to — your heart is beating, your lungs are moving, your cells are quietly going about their ancient work. You are a miracle that forgot it was miraculous.',
+      'The weight of the blanket or chair beneath you is the planet itself holding you up. You do not have to hold yourself right now. The earth has got you.',
+      'Something in your home right now — a lamp, a pillow, a favorite object — was chosen by you on a specific day because something about it felt right. You have always known how to find comfort.',
+      'Somewhere in your body right now there is a place that feels softer than the rest. Find it. Rest there for a moment.',
+    ]
   },
-  peach: {
-    name: 'Blossom Heart', emoji: '🌸', color: 'peach', btnClass: 'btn-peach',
-    steep: 240, accent: '#F5A98B', fillColor: '#FDE4D6',
-    tip: 'Think of one person you\'d like to send warmth to today.',
-    release: '"The weight of needing to be more."',
-    receive: 'The lightness of being exactly this.',
-    sigil: '🌸', sigilName: 'Blossom Glow'
+  {
+    id: 'joy',
+    label: 'Joy',
+    emoji: '🦋',
+    desc: 'I want to feel light and alive.',
+    color: '#c4860a',
+    colorLight: '#fdf5e0',
+    colorMid: '#f0c84a',
+    colorDark: '#8a5a00',
+    particle: '#f0c84a',
+    shape: 'butterfly',
+    recipe: {
+      name: 'Golden Hour Citrus Ginger',
+      subtitle: 'Sunshine in a cup, no weather required',
+      ingredients: ['1 tsp green tea or white tea','3 slices fresh ginger','½ tsp dried orange peel','1 tsp honey','Squeeze of fresh lemon','1 cup water at 85°C'],
+      story: 'Ginger is one of the most joyful plants alive — it cannot help but warm everything it touches. This cup is not subtle. It announces itself. It is the tea equivalent of throwing open a window and deciding the day is going to be good regardless.'
+    },
+    affirmation: 'Joy does not need a reason. I do not need to justify feeling good. Delight is my birthright and I am claiming it right now.',
+    self_care: 'Put on one song — just one — that makes you feel something good. Let yourself actually move to it even if just your fingers or your head. Music is physical joy and you deserve it.',
+    magic_prompts: [
+      'Your laugh — that specific sound — has never existed before in all of human history and will never exist again after you are gone. When you laugh you make a sound the universe has never heard.',
+      'Think of one person who loves you. Right now, somewhere in the world, that person exists. They are going about their day carrying some amount of warmth for you in their chest. You are loved even when no one is saying so.',
+      'The mug in your hands was made by human hands — or by machines built by human hands guided by human minds. Thousands of decisions led to this specific object being in your specific hands today.',
+      'Joy is contagious in a way scientists have actually measured. Your good mood is physically affecting the people around you right now. You are improving the world by feeling good.',
+      'Something near you right now — a color, a texture, a small object — is genuinely beautiful. Not Instagram beautiful. Actually beautiful. Look for it.',
+    ]
   },
-  lavender: {
-    name: 'Twilight Magic', emoji: '🔮', color: 'lavender', btnClass: 'btn-lavender',
-    steep: 300, accent: '#B89FD8', fillColor: '#E2D6F5',
-    tip: 'What\'s one small thing you\'ve been carrying that you could set down?',
-    release: '"The stories I\'ve been telling myself."',
-    receive: 'Openness to what wants to emerge.',
-    sigil: '🔮', sigilName: 'Moonveil Charm'
+  {
+    id: 'courage',
+    label: 'Courage',
+    emoji: '🐉',
+    desc: 'I need strength for what is ahead.',
+    color: '#1a6a5a',
+    colorLight: '#e0f5f0',
+    colorMid: '#4ac4a8',
+    colorDark: '#0a3a2a',
+    particle: '#4ac4a8',
+    shape: 'dragon',
+    recipe: {
+      name: 'Dragon Fire Spiced Chai',
+      subtitle: 'For the brave thing you are about to do',
+      ingredients: ['1 tsp black tea','2 cardamom pods, crushed','¼ tsp cinnamon','1 clove','Small piece of fresh ginger','1 cup oat milk, warmed','1 tsp maple syrup'],
+      story: 'Every spice in this cup was once considered so precious that wars were fought over it. You are drinking history. You are drinking the distilled boldness of every human who ever crossed an ocean to find something worth finding. This cup does not make you brave. It reminds you that you already are.'
+    },
+    affirmation: 'Courage is not the absence of fear. It is deciding that what I am moving toward matters more than what I am afraid of. I have done hard things before. I am doing one now.',
+    self_care: 'Stand up if you can. Plant your feet flat on the floor. Feel the ground under you. Take three breaths from your belly, not your chest. This is how you arrive in your own body before something difficult.',
+    magic_prompts: [
+      'Every human who has ever lived faced a moment they did not think they could get through. Every single one of them had a day that felt like yours does right now. And here you are, descended from every single one who made it.',
+      'Your heartbeat right now is faster than usual because your body is preparing to help you. Fear and excitement are the same physical sensation. Your body is on your side.',
+      'Think of one hard thing you have already survived. You did not know you would survive it when you were in it. But you did. That version of you is in you right now.',
+      'The thing you are afraid of is real. And you are also real. Right now you are here, breathing, with a warm cup in your hands. That is not nothing. That is something to build from.',
+      'Somewhere right now someone is doing the brave thing that terrifies them, just like you are about to. You are not alone in this. Courage is always happening somewhere in the world.',
+    ]
   },
-  honey: {
-    name: 'Golden Hour', emoji: '🍯', color: 'honey', btnClass: 'btn-honey',
-    steep: 240, accent: '#F2C46D', fillColor: '#FCE9B3',
-    tip: 'What small sweetness have you been putting off giving yourself?',
-    release: '"The rush to get to the next thing."',
-    receive: 'The richness of right here, right now.',
-    sigil: '✨', sigilName: 'Sundrip Sigil'
+  {
+    id: 'clarity',
+    label: 'Clarity',
+    emoji: '⭐',
+    desc: 'My mind is foggy. I need to think.',
+    color: '#2a5a8a',
+    colorLight: '#e0eef8',
+    colorMid: '#6aaad0',
+    colorDark: '#0a2a4a',
+    particle: '#6aaad0',
+    shape: 'star',
+    recipe: {
+      name: 'Clear Mind Peppermint Green',
+      subtitle: 'For untangling what has gotten knotted',
+      ingredients: ['1 tsp green tea','1 tsp dried peppermint','¼ tsp rosemary (optional — for memory)','½ tsp honey','1 cup water at 80°C — not too hot'],
+      story: 'Peppermint cools and clarifies like a window opened in a stuffy room. Green tea carries L-theanine, which steadies the mind without wiring it. This is the cup for sitting with a problem not to solve it but to see it more clearly. Sometimes clarity is not an answer. It is just better light.'
+    },
+    affirmation: 'I do not need to figure out everything right now. I only need to see the next true thing. My mind is capable of finding its way through this.',
+    self_care: 'Write down the three things making your mind the most cluttered right now. Not to solve them — just to move them from inside your head onto something outside it. Your brain will thank you.',
+    magic_prompts: [
+      'The confusion you feel is your mind working on something genuinely complex. Confusion is not failure. It is the feeling of understanding trying to form. You are in the middle of something, not at the end.',
+      'Your brain right now is making thousands of connections per second, most of them below your awareness. The answer you are looking for may already be forming somewhere you cannot see yet.',
+      'Look at your hands. They know how to do things your conscious mind has forgotten teaching them — how to type, how to hold a cup, how to find a light switch in the dark. You contain more knowledge than you can access at once.',
+      'Fog always clears eventually. Every foggy morning has a history of becoming a clear afternoon. You have been here before. The fog has lifted before.',
+      'The question you cannot answer right now does not need to be answered in the next five minutes. Some questions need to be slept on, walked with, or steeped like tea. Give it time.',
+    ]
+  },
+  {
+    id: 'gratitude',
+    label: 'Gratitude',
+    emoji: '🌸',
+    desc: 'I want to feel thankful and open.',
+    color: '#8a2a5a',
+    colorLight: '#f8e8f0',
+    colorMid: '#d06090',
+    colorDark: '#4a0a2a',
+    particle: '#d06090',
+    shape: 'flower',
+    recipe: {
+      name: 'Rose Hibiscus Heart Tea',
+      subtitle: 'For a heart that wants to feel its own fullness',
+      ingredients: ['1 tsp dried hibiscus flowers','½ tsp dried rose petals','¼ tsp cinnamon','1 tsp honey','Squeeze of orange','1 cup hot water'],
+      story: 'Hibiscus blooms for a single day. It gives everything it has in one extraordinary moment and then rests. Rose has been associated with the heart across every culture that has ever grown one. This cup is made of things that bloomed entirely — and chose to be generous anyway.'
+    },
+    affirmation: 'There are things in my life right now that I once hoped for and now have. I let myself feel that. I am grateful without pretending everything is perfect.',
+    self_care: 'Think of one person who has made your life better just by existing in it. You do not have to tell them right now. Just hold them in your mind for thirty seconds and let yourself feel the warmth of that.',
+    magic_prompts: [
+      'The hot water in your cup was once rain. Before that it was ocean. Before that it was part of something alive. Water never leaves the planet — it just changes form. You are drinking ancient water.',
+      'Someone grew or harvested what is in your cup. Hands touched these plants at some point on their journey to you. There is an invisible thread of human care connecting you to people you will never meet.',
+      'Right now your body is converting what you are drinking into energy. Plants that grew in soil under a sun are becoming part of you. You are in a constant state of being remade by the world around you.',
+      'Something you own was once someone else\'s favorite thing, or something someone made with their best effort. The objects around you have histories. They arrived here through a thousand small coincidences.',
+      'The fact that you are here, having this moment, with this cup, is the result of an unbroken chain of survival stretching back billions of years. Every single ancestor you have ever had lived long enough to pass something forward. That something is you.',
+    ]
+  },
+  {
+    id: 'release',
+    label: 'Release',
+    emoji: '🌙',
+    desc: 'I need to let something go.',
+    color: '#2a2a6a',
+    colorLight: '#e8e8f8',
+    colorMid: '#8080c8',
+    colorDark: '#0a0a3a',
+    particle: '#8080c8',
+    shape: 'moon',
+    recipe: {
+      name: 'Elderflower Letting Go Tea',
+      subtitle: 'For the things that have been held long enough',
+      ingredients: ['1 tsp elderflower (dried or cordial)','½ tsp lemon verbena','¼ tsp passionflower (if available)','Juice of half a lemon','1 tsp honey','1 cup hot water'],
+      story: 'Elderflower is the scent of late spring — of things that bloomed fully and are now ready to drift. Lemon cuts through. Passionflower has been used for centuries by those who needed to unknot something they had been carrying. This cup does not demand you be fine. It just asks what you might be willing to put down.'
+    },
+    affirmation: 'I am allowed to release what no longer serves me. Letting go is not giving up. It is making room. I release this gently, with both hands open.',
+    self_care: 'Write down one thing you want to release on a small piece of paper. You do not have to do anything dramatic with it. Just the act of writing it outside of yourself is the beginning of release.',
+    magic_prompts: [
+      'The breath you just exhaled is gone. Completely gone. Your body does this thousands of times a day — takes something in, uses what it needs, releases the rest without grief. You already know how to let go. You do it constantly.',
+      'The moon right now, wherever it is in its cycle, is doing exactly what it always does — waxing and waning, holding and releasing, full and then empty and then full again. You are allowed to be in any phase.',
+      'Emotions move through the body like weather. The ones that feel permanent are not. Even the heaviest feelings, if you stop fighting them, tend to shift. You do not have to fix this feeling. You just have to let it move.',
+      'Something you were worried about a year ago has already resolved itself one way or another. Time moved through it. Time will move through this too.',
+      'The thing you are holding onto — even if it is heavy — has been teaching you something. You are not wrong for having held it. You are ready to learn from a lighter place now.',
+    ]
+  },
+  {
+    id: 'wonder',
+    label: 'Wonder',
+    emoji: '✨',
+    desc: 'I want to feel the magic in everything.',
+    color: '#1a6a6a',
+    colorLight: '#e0f5f5',
+    colorMid: '#4ac4c4',
+    colorDark: '#0a3a3a',
+    particle: '#4ac4c4',
+    shape: 'dragonfly',
+    recipe: {
+      name: 'Blue Butterfly Pea Wonder Tea',
+      subtitle: 'The tea that changes color like actual magic',
+      ingredients: ['1 tsp dried butterfly pea flowers','½ tsp hibiscus','1 tsp honey','Fresh lemon wedge (do not add yet)','1 cup hot water','Ice optional'],
+      story: 'Brew this tea and it will be deep indigo blue. Add a squeeze of lemon and watch it turn violet, then pink. This is not a trick. This is real chemistry — the pH of the lemon shifting the anthocyanins in the flower. Magic is usually just wonder we have not explained yet. Sometimes it is wonder we have explained but that still takes our breath away.'
+    },
+    affirmation: 'The world is strange and extraordinary and I am paying attention. Wonder is not childish. It is the most sophisticated response to being alive.',
+    self_care: 'Find one small thing near you right now and look at it for thirty seconds longer than you normally would. Really look. Most beautiful things only reveal themselves to patience.',
+    magic_prompts: [
+      'The mug in your hands right now is warm because of a chain of events that started with fusion reactions happening 93 million miles away. The sun made this warmth. You are holding a piece of the sun.',
+      'Right now there are approximately 37 trillion cells in your body each doing their specific job. They have never met each other. They do not have meetings. And yet here you are — a coordinated miracle of incomprehensible complexity — making tea.',
+      'The plants in your cup photosynthesized sunlight and stored it as chemical energy. You are about to absorb that energy into your body. You are about to run partly on sunlight. You are a little bit solar powered.',
+      'Somewhere above you right now — through the ceiling, through the clouds — space begins. There is no clear line where air ends and space starts. The sky does not suddenly stop. You are already at the edge of something infinite.',
+      'The fact that humans developed the ability to find beauty — in music, in nature, in tea, in stories — and that this beauty actually makes us feel something physically in our chests — is one of the most remarkable things about being alive. You are experiencing it right now.',
+    ]
   }
+];
+
+// ── State ──
+let selectedIntention = null;
+let steepMinutes = 3;
+let steepTimer = null;
+let steepRemaining = 0;
+let breathTimer = null;
+let breathRound = 0;
+let breathPhaseIdx = 0;
+let breathCount = 0;
+let soundEnabled = true;
+let audioCtx = null;
+let currentShape = null;
+
+// ── Audio ──
+function getAudioCtx(){
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
+}
+function playTone(freq, duration, type='sine', vol=0.08){
+  if(!soundEnabled) return;
+  try{
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0,ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(vol,ctx.currentTime+0.1);
+    gain.gain.linearRampToValueAtTime(0,ctx.currentTime+duration);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime+duration+0.05);
+  }catch(e){}
+}
+function toggleSound(){
+  soundEnabled = !soundEnabled;
+  document.getElementById('sound-toggle').textContent = soundEnabled ? '🔔 Sound On' : '🔕 Sound Off';
+}
+
+// ── Starfield ──
+function initStars(){
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const stars = Array.from({length:120},()=>({
+    x:Math.random()*canvas.width, y:Math.random()*canvas.height,
+    r:Math.random()*1.4+0.3, o:Math.random(), s:Math.random()*0.008+0.003
+  }));
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    stars.forEach(s=>{
+      s.o += s.s; if(s.o>1||s.o<0) s.s*=-1;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,255,255,${s.o*0.6})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;});
+}
+
+// ── Progress dots ──
+function updateDots(activeIdx){
+  const dots = document.querySelectorAll('.dot');
+  dots.forEach((d,i)=>{
+    d.classList.toggle('done', i<activeIdx);
+    d.classList.toggle('active', i===activeIdx);
+  });
+}
+
+// ── Background glow ──
+function setGlow(color){
+  document.getElementById('bg-glow').style.background =
+    `radial-gradient(ellipse at 50% 60%,${color}33 0%,transparent 70%)`;
+}
+
+// ── SVG shapes (breathing) ──
+const SHAPES = {
+  cat: `<g id="breath-shape">
+    <ellipse cx="110" cy="110" rx="55" ry="42" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.8"/>
+    <ellipse cx="85" cy="75" rx="16" ry="20" fill="none" stroke="currentColor" stroke-width="2" opacity="0.7"/>
+    <ellipse cx="135" cy="75" rx="16" ry="20" fill="none" stroke="currentColor" stroke-width="2" opacity="0.7"/>
+    <polygon points="85,60 78,42 92,55" fill="currentColor" opacity="0.5"/>
+    <polygon points="135,60 128,42 142,55" fill="currentColor" opacity="0.5"/>
+    <circle cx="98" cy="100" r="3" fill="currentColor" opacity="0.6"/>
+    <circle cx="122" cy="100" r="3" fill="currentColor" opacity="0.6"/>
+    <ellipse cx="110" cy="107" rx="5" ry="3.5" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
+    <path d="M 88 110 Q 80 108 75 112" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.5" stroke-linecap="round"/>
+    <path d="M 88 115 Q 79 114 74 118" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.5" stroke-linecap="round"/>
+    <path d="M 132 110 Q 140 108 145 112" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.5" stroke-linecap="round"/>
+    <path d="M 132 115 Q 141 114 146 118" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.5" stroke-linecap="round"/>
+    <path d="M 100 145 Q 110 155 120 145" stroke="currentColor" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
+  </g>`,
+  butterfly: `<g id="breath-shape">
+    <path d="M 110 110 Q 60 60 40 90 Q 20 120 70 130 Q 95 135 110 110 Z" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.8"/>
+    <path d="M 110 110 Q 160 60 180 90 Q 200 120 150 130 Q 125 135 110 110 Z" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.8"/>
+    <path d="M 110 110 Q 75 120 65 145 Q 60 165 90 155 Q 105 148 110 125 Z" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
+    <path d="M 110 110 Q 145 120 155 145 Q 160 165 130 155 Q 115 148 110 125 Z" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
+    <ellipse cx="110" cy="108" rx="4" ry="18" fill="currentColor" opacity="0.5"/>
+    <path d="M 108 90 Q 104 80 100 75" stroke="currentColor" stroke-width="2" fill="none" opacity="0.5" stroke-linecap="round"/>
+    <path d="M 112 90 Q 116 80 120 75" stroke="currentColor" stroke-width="2" fill="none" opacity="0.5" stroke-linecap="round"/>
+  </g>`,
+  dragon: `<g id="breath-shape">
+    <path d="M 110 140 Q 70 130 55 100 Q 40 70 60 55 Q 80 40 95 55 Q 105 65 110 80 Q 115 65 125 55 Q 140 40 160 55 Q 180 70 165 100 Q 150 130 110 140 Z" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.8"/>
+    <path d="M 75 55 Q 72 38 68 28" stroke="currentColor" stroke-width="3" fill="none" opacity="0.7" stroke-linecap="round"/>
+    <path d="M 90 48 Q 90 30 88 20" stroke="currentColor" stroke-width="3" fill="none" opacity="0.7" stroke-linecap="round"/>
+    <path d="M 130 48 Q 130 30 132 20" stroke="currentColor" stroke-width="3" fill="none" opacity="0.7" stroke-linecap="round"/>
+    <path d="M 145 55 Q 148 38 152 28" stroke="currentColor" stroke-width="3" fill="none" opacity="0.7" stroke-linecap="round"/>
+    <path d="M 60 80 Q 35 75 28 90" stroke="currentColor" stroke-width="2.5" fill="none" opacity="0.6" stroke-linecap="round"/>
+    <path d="M 160 80 Q 185 75 192 90" stroke="currentColor" stroke-width="2.5" fill="none" opacity="0.6" stroke-linecap="round"/>
+    <circle cx="95" cy="72" r="4" fill="currentColor" opacity="0.6"/>
+    <circle cx="125" cy="72" r="4" fill="currentColor" opacity="0.6"/>
+    <path d="M 100 90 Q 110 97 120 90" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.5" stroke-linecap="round"/>
+  </g>`,
+  star: `<g id="breath-shape">
+    <polygon points="110,40 120,85 165,85 130,110 142,155 110,132 78,155 90,110 55,85 100,85" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.8"/>
+    <polygon points="110,65 115,88 138,88 120,101 126,124 110,112 94,124 100,101 82,88 105,88" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+  </g>`,
+  flower: `<g id="breath-shape">
+    <ellipse cx="110" cy="70" rx="16" ry="26" fill="none" stroke="currentColor" stroke-width="2" opacity="0.7"/>
+    <ellipse cx="110" cy="150" rx="16" ry="26" fill="none" stroke="currentColor" stroke-width="2" opacity="0.7"/>
+    <ellipse cx="70" cy="110" rx="26" ry="16" fill="none" stroke="currentColor" stroke-width="2" opacity="0.7"/>
+    <ellipse cx="150" cy="110" rx="26" ry="16" fill="none" stroke="currentColor" stroke-width="2" opacity="0.7"/>
+    <ellipse cx="82" cy="82" rx="16" ry="26" transform="rotate(45 82 82)" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
+    <ellipse cx="138" cy="82" rx="16" ry="26" transform="rotate(-45 138 82)" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
+    <ellipse cx="82" cy="138" rx="16" ry="26" transform="rotate(-45 82 138)" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
+    <ellipse cx="138" cy="138" rx="16" ry="26" transform="rotate(45 138 138)" fill="none" stroke="currentColor" stroke-width="2" opacity="0.6"/>
+    <circle cx="110" cy="110" r="18" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.9"/>
+    <circle cx="110" cy="110" r="8" fill="currentColor" opacity="0.3"/>
+  </g>`,
+  moon: `<g id="breath-shape">
+    <path d="M 130 55 Q 80 65 75 110 Q 70 155 120 165 Q 85 160 75 130 Q 60 90 90 60 Q 105 48 130 55 Z" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.8"/>
+    <circle cx="145" cy="70" r="3" fill="currentColor" opacity="0.5"/>
+    <circle cx="158" cy="95" r="2" fill="currentColor" opacity="0.4"/>
+    <circle cx="152" cy="120" r="2.5" fill="currentColor" opacity="0.4"/>
+    <circle cx="130" cy="145" r="2" fill="currentColor" opacity="0.35"/>
+    <path d="M 85 80 Q 90 78 95 82" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.4" stroke-linecap="round"/>
+    <path d="M 82 100 Q 88 97 94 102" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.35" stroke-linecap="round"/>
+  </g>`,
+  dragonfly: `<g id="breath-shape">
+    <ellipse cx="110" cy="110" rx="8" ry="40" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.8"/>
+    <ellipse cx="110" cy="85" rx="6" ry="12" fill="none" stroke="currentColor" stroke-width="2" opacity="0.7"/>
+    <path d="M 110 80 Q 60 55 45 75 Q 35 95 75 105 Q 95 110 110 105 Z" fill="none" stroke="currentColor" stroke-width="2" opacity="0.75"/>
+    <path d="M 110 80 Q 160 55 175 75 Q 185 95 145 105 Q 125 110 110 105 Z" fill="none" stroke="currentColor" stroke-width="2" opacity="0.75"/>
+    <path d="M 110 100 Q 60 105 48 125 Q 42 145 80 140 Q 98 137 110 125 Z" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.65"/>
+    <path d="M 110 100 Q 160 105 172 125 Q 178 145 140 140 Q 122 137 110 125 Z" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.65"/>
+    <circle cx="110" cy="72" r="5" fill="currentColor" opacity="0.5"/>
+    <circle cx="105" cy="68" r="2.5" fill="currentColor" opacity="0.4"/>
+    <circle cx="115" cy="68" r="2.5" fill="currentColor" opacity="0.4"/>
+  </g>`
 };
 
-let currentBrew = null;
-let breathPhase = 'inhale';
-let breathCount = 4;
-let breathCycles = 0;
-let breathTimer = null;
-let steepTimer = null;
-let steepSecondsLeft = 180;
-let steepTotal = 180;
+function renderShape(shapeKey, color){
+  const wrap = document.getElementById('breath-shape-wrap');
+  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 220 220');
+  svg.style.cssText = `position:absolute;inset:0;width:100%;height:100%;color:${color};filter:drop-shadow(0 0 12px ${color}80);transition:transform 0.3s ease;`;
+  svg.innerHTML = SHAPES[shapeKey] || SHAPES.star;
+  wrap.innerHTML = '';
+  wrap.appendChild(svg);
+  currentShape = svg;
+}
 
-// ── Brew selection ──
-function selectBrew(el) {
-  document.querySelectorAll('.brew-card').forEach(c => c.classList.remove('selected'));
+function animateShape(scale, duration){
+  if(!currentShape) return;
+  currentShape.style.transition = `transform ${duration}ms ease`;
+  currentShape.style.transform = `scale(${scale})`;
+}
+
+// ── Intent selection ──
+function initIntentions(){
+  const grid = document.getElementById('intention-grid');
+  INTENTIONS.forEach(intent=>{
+    const card = document.createElement('div');
+    card.className = 'intention-card';
+    card.innerHTML = `<span class="int-emoji">${intent.emoji}</span><div class="int-label">${intent.label}</div><div class="int-desc">${intent.desc}</div>`;
+    card.onclick = ()=>selectIntention(card,intent);
+    grid.appendChild(card);
+  });
+}
+
+function selectIntention(el,intent){
+  document.querySelectorAll('.intention-card').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
-  currentBrew = BREWS[el.dataset.brew];
-
-  // Update begin button color
-  const btn = document.getElementById('btn-begin');
-  btn.className = `btn-main ${currentBrew.btnClass}`;
-  btn.disabled = false;
-}
-
-// ── Screen transitions ──
-function goTo(id) {
-  document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active', 'screen-enter'); });
-  const next = document.getElementById(id);
-  next.classList.add('active', 'screen-enter');
-
-  // Screen-specific setup
-  if (id === 'screen-breathe') startBreathing();
-  if (id === 'screen-steep') setupSteep();
-  if (id === 'screen-affirm') setupAffirm();
-  if (id === 'screen-mood') setupMood();
-  if (id === 'screen-reward') setupReward();
-}
-
-// ── Breathing engine (4-7-8 pattern) ──
-const PHASES = [
-  { name: 'inhale',  duration: 4,  scale: 1,    hint: 'breathe in' },
-  { name: 'hold',    duration: 7,  scale: 1,    hint: 'hold still' },
-  { name: 'exhale',  duration: 8,  scale: 0.45, hint: 'let it go' }
-];
-let phaseIdx = 0;
-let phaseTick = 0;
-
-function startBreathing() {
-  phaseIdx = 0; phaseTick = 0; breathCycles = 0;
-  applyBreathPhase();
-  if (breathTimer) clearInterval(breathTimer);
-  breathTimer = setInterval(tickBreath, 1000);
-}
-
-function applyBreathPhase() {
-  const p = PHASES[phaseIdx];
-  const circle = document.getElementById('breath-circle');
-  const word = document.getElementById('breath-word');
-  const count = document.getElementById('breath-count');
-
-  word.textContent = p.hint;
-  count.textContent = p.duration - phaseTick;
-
-  // Color the circle per brew
-  const col = currentBrew ? currentBrew.accent : '#7BAF7C';
-  circle.style.background = col;
-
-  // Scale
-  const targetScale = p.name === 'exhale' ? 0.45 : (p.name === 'hold' ? 1 : 0.45);
-  if (p.name === 'inhale') {
-    // Animate expand over duration
-    circle.style.transition = `transform ${p.duration}s linear`;
-    circle.style.transform = `translate(-50%, -50%) scale(1)`;
-  } else if (p.name === 'hold') {
-    circle.style.transition = 'none';
-    circle.style.transform = `translate(-50%, -50%) scale(1)`;
-  } else {
-    circle.style.transition = `transform ${p.duration}s linear`;
-    circle.style.transform = `translate(-50%, -50%) scale(0.45)`;
-  }
-}
-
-function tickBreath() {
-  const p = PHASES[phaseIdx];
-  phaseTick++;
-
-  const count = document.getElementById('breath-count');
-  count.textContent = Math.max(0, p.duration - phaseTick);
-
-  if (phaseTick >= p.duration) {
-    phaseTick = 0;
-    phaseIdx = (phaseIdx + 1) % 3;
-    if (phaseIdx === 0) {
-      breathCycles++;
-      const dots = document.querySelectorAll('#breath-dots .bdot');
-      if (breathCycles <= dots.length) dots[breathCycles - 1].classList.add('done');
-    }
-    applyBreathPhase();
-
-    if (breathCycles >= 3) {
-      clearInterval(breathTimer);
-      const btn = document.getElementById('btn-next-breathe');
-      btn.disabled = false;
-      if (currentBrew) btn.className = `btn-main ${currentBrew.btnClass}`;
-      document.getElementById('breath-word').textContent = '✨ lovely';
-      document.getElementById('breath-count').textContent = '';
-    }
-  }
+  selectedIntention = intent;
+  document.getElementById('btn-to-brew').disabled = false;
+  setGlow(intent.color);
+  document.documentElement.style.setProperty('--accent',intent.color);
+  document.documentElement.style.setProperty('--accent-light',intent.colorLight);
+  document.documentElement.style.setProperty('--accent-mid',intent.colorMid);
 }
 
 // ── Steep timer ──
-function setupSteep() {
-  if (!currentBrew) return;
-  steepSecondsLeft = currentBrew.steep;
-  steepTotal = currentBrew.steep;
-
-  document.getElementById('steep-brew-name').textContent = currentBrew.name;
-  document.getElementById('steep-tip').textContent = currentBrew.tip;
-  document.getElementById('kettle-fill').setAttribute('fill', currentBrew.fillColor);
-  document.getElementById('steep-progress-circle').setAttribute('stroke', currentBrew.accent);
-
-  const btnS = document.getElementById('btn-next-steep');
-  btnS.className = `btn-main ${currentBrew.btnClass}`;
-  btnS.disabled = true;
-
-  updateSteepDisplay();
-
-  if (steepTimer) clearInterval(steepTimer);
-  steepTimer = setInterval(tickSteep, 1000);
+function setSteep(mins, btn){
+  steepMinutes = mins;
+  document.querySelectorAll('.steep-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('btn-start-steep').disabled = false;
 }
 
-function tickSteep() {
-  steepSecondsLeft--;
-  updateSteepDisplay();
-  if (steepSecondsLeft <= 0) {
-    clearInterval(steepTimer);
-    document.getElementById('btn-next-steep').disabled = false;
-    document.getElementById('steep-countdown').textContent = 'Ready!';
-    triggerSparkles(5);
+let steepInterval = null;
+function startSteep(){
+  steepRemaining = steepMinutes * 60;
+  const total = steepRemaining;
+  const circumference = 326.7;
+  document.getElementById('timer-display').style.display = 'block';
+  document.getElementById('btn-start-steep').style.display = 'none';
+  document.getElementById('steep-options').style.display = 'none';
+  updateTimerDisplay(steepRemaining);
+  playTone(528,0.8,'sine',0.06);
+
+  steepInterval = setInterval(()=>{
+    steepRemaining--;
+    updateTimerDisplay(steepRemaining);
+    const pct = steepRemaining/total;
+    document.getElementById('timer-fill').style.strokeDashoffset = circumference*(1-pct);
+    if(steepRemaining<=0){
+      clearInterval(steepInterval);
+      playTone(396,1.2,'sine',0.1);
+      setTimeout(()=>playTone(528,1.2,'sine',0.1),400);
+      document.getElementById('btn-skip-steep').textContent = '✦ Tea is Ready — Begin Breathing ✦';
+      document.getElementById('btn-skip-steep').style.display = 'block';
+    }
+  },1000);
+  document.getElementById('btn-skip-steep').style.display = 'block';
+}
+
+function updateTimerDisplay(secs){
+  const m = Math.floor(secs/60);
+  const s = secs%60;
+  document.getElementById('timer-mins').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+// ── Breathing ──
+const BREATH_PHASES = [
+  {name:'Inhale',counts:4,scale:1.25,tone:396},
+  {name:'Hold',counts:4,scale:1.25,tone:null},
+  {name:'Exhale',counts:4,scale:0.82,tone:528},
+  {name:'Hold',counts:4,scale:0.82,tone:null},
+];
+
+function startBreathing(){
+  document.getElementById('btn-start-breathe').style.display = 'none';
+  breathRound = 0;
+  breathPhaseIdx = 0;
+  runBreathPhase();
+}
+
+function runBreathPhase(){
+  if(breathRound >= 4){
+    document.getElementById('breath-phase').textContent = 'Complete';
+    document.getElementById('breath-count').textContent = '✦';
+    animateShape(1.0, 800);
+    setTimeout(()=>{document.getElementById('btn-to-be').style.display = 'block';},600);
+    return;
   }
+  const phase = BREATH_PHASES[breathPhaseIdx];
+  document.getElementById('breath-phase').textContent = phase.name;
+  document.getElementById('breath-rounds').textContent = `Round ${breathRound+1} of 4`;
+  if(phase.tone) playTone(phase.tone, 0.6, 'sine', 0.07);
+  animateShape(phase.scale, 800);
+  let count = phase.counts;
+  document.getElementById('breath-count').textContent = count;
+  breathTimer = setInterval(()=>{
+    count--;
+    if(count<=0){
+      clearInterval(breathTimer);
+      breathPhaseIdx++;
+      if(breathPhaseIdx>=BREATH_PHASES.length){
+        breathPhaseIdx=0;
+        breathRound++;
+      }
+      setTimeout(runBreathPhase, 200);
+    } else {
+      document.getElementById('breath-count').textContent = count;
+    }
+  },1000);
 }
 
-function updateSteepDisplay() {
-  const m = Math.floor(steepSecondsLeft / 60);
-  const s = steepSecondsLeft % 60;
-  document.getElementById('steep-countdown').textContent = `${m}:${s.toString().padStart(2,'0')}`;
-
-  const circ = 2 * Math.PI * 68;
-  const progress = steepSecondsLeft / steepTotal;
-  const offset = circ * (1 - progress);
-  document.getElementById('steep-progress-circle').setAttribute('stroke-dashoffset', offset);
+// ── Navigation ──
+function goToBrew(){
+  if(!selectedIntention) return;
+  const r = selectedIntention.recipe;
+  document.getElementById('brew-name').textContent = r.name;
+  document.getElementById('brew-sub').textContent = r.subtitle;
+  document.getElementById('brew-story').textContent = r.story;
+  const list = document.getElementById('brew-ingredients');
+  list.innerHTML = '';
+  r.ingredients.forEach(i=>{const li=document.createElement('li');li.textContent=i;list.appendChild(li);});
+  showStep('step-brew');
+  updateDots(1);
 }
 
-// ── Affirmation ──
-function setupAffirm() {
-  if (!currentBrew) return;
-  const card = document.getElementById('affirm-card');
-  card.className = `affirm-card ${currentBrew.color}`;
-  document.getElementById('affirm-release').textContent = currentBrew.release;
-  document.getElementById('affirm-receive').textContent = currentBrew.receive;
-  document.getElementById('affirm-divider').className = `affirm-divider ${currentBrew.color}`;
-  document.getElementById('affirm-divider').style.background = currentBrew.accent;
-
-  const btn = document.getElementById('btn-next-affirm');
-  btn.className = `btn-main ${currentBrew.btnClass}`;
+function goToBreathe(){
+  if(steepInterval) clearInterval(steepInterval);
+  renderShape(selectedIntention.shape, selectedIntention.colorMid);
+  showStep('step-breathe');
+  updateDots(2);
 }
 
-// ── Mood ──
-function setupMood() {
-  if (!currentBrew) return;
-  document.getElementById('btn-mood-done').className = `btn-main ${currentBrew.btnClass}`;
-  document.getElementById('btn-mood-done').disabled = true;
+function goToBe(){
+  const aff = document.getElementById('be-affirmation');
+  aff.textContent = selectedIntention.affirmation;
+  aff.classList.remove('visible');
+  showStep('step-be');
+  updateDots(3);
+  setTimeout(()=>aff.classList.add('visible'), 300);
 }
 
-function selectMood(el) {
-  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
-  el.classList.add('selected');
-  document.getElementById('btn-mood-done').disabled = false;
+function goToMagic(){
+  const prompts = selectedIntention.magic_prompts;
+  const prompt = prompts[Math.floor(Math.random()*prompts.length)];
+  document.getElementById('magic-prompt').textContent = prompt;
+  document.getElementById('self-care-text').textContent = selectedIntention.self_care;
+  document.getElementById('closing-text').textContent = 'The magic was always here. You just needed a moment to see it. Come back whenever you need to find it again.';
+  document.querySelector('.reflection-input').value = '';
+  showStep('step-magic');
+  updateDots(4);
+  playTone(432, 1.5, 'sine', 0.06);
 }
 
-// ── Finish ──
-function finishRitual() {
-  triggerSparkles(20);
-  goTo('screen-reward');
+function goBack(stepId){
+  showStep(stepId);
+  if(stepId==='step-intention') updateDots(0);
 }
 
-function setupReward() {
-  if (!currentBrew) return;
-  document.getElementById('sigil-display').textContent = currentBrew.sigil;
-  document.getElementById('sigil-name').innerHTML = `Steam-sigil: <em>${currentBrew.sigilName}</em>`;
-  document.getElementById('reward-sub').innerHTML = `You showed up for yourself today.<br>That's the whole magic.`;
-  document.querySelector('#screen-reward .btn-main').className = `btn-main ${currentBrew.btnClass}`;
+function showStep(id){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ── Sparkles ──
-function triggerSparkles(count = 12) {
-  const container = document.getElementById('sparkles');
-  const colors = ['#7BAF7C','#F5A98B','#B89FD8','#F2C46D','#87C4E0','#E07A8C'];
-  for (let i = 0; i < count; i++) {
-    setTimeout(() => {
-      const sp = document.createElement('div');
-      sp.className = 'sparkle';
-      sp.style.left = (20 + Math.random() * 60) + '%';
-      sp.style.top = (Math.random() * 60) + '%';
-      sp.style.background = colors[Math.floor(Math.random() * colors.length)];
-      sp.style.animationDelay = (Math.random() * 0.4) + 's';
-      sp.style.transform = `rotate(${Math.random()*180}deg)`;
-      container.appendChild(sp);
-      setTimeout(() => sp.remove(), 1600);
-    }, i * 60);
-  }
+function startOver(){
+  if(steepInterval) clearInterval(steepInterval);
+  if(breathTimer) clearInterval(breathTimer);
+  selectedIntention = null;
+  steepMinutes = 3;
+  breathRound = 0;
+  breathPhaseIdx = 0;
+  document.getElementById('btn-to-brew').disabled = true;
+  document.getElementById('btn-start-steep').disabled = true;
+  document.getElementById('btn-start-steep').style.display = 'block';
+  document.getElementById('btn-skip-steep').style.display = 'none';
+  document.getElementById('timer-display').style.display = 'none';
+  document.getElementById('steep-options').style.display = 'flex';
+  document.getElementById('btn-start-breathe').style.display = 'block';
+  document.getElementById('btn-to-be').style.display = 'none';
+  document.querySelectorAll('.intention-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.steep-btn').forEach(b=>b.classList.remove('active'));
+  setGlow('#6a4a8a');
+  document.documentElement.style.setProperty('--accent','#6a4a8a');
+  document.documentElement.style.setProperty('--accent-light','#f0eaf8');
+  document.documentElement.style.setProperty('--accent-mid','#c4a8e0');
+  showStep('step-intention');
+  updateDots(0);
 }
 
-function sparkleAndShare() {
-  triggerSparkles(30);
-  setTimeout(() => alert('📱 In the real app, this would generate a beautiful shareable card for your sigil! Your WhimsiTea community would love it. 🫖✨'), 400);
+function shareRitual(){
+  if(!selectedIntention) return;
+  const text = `I just completed a Brew & Breathe ritual with WhimsiTea. ✨\n\nMy intention: ${selectedIntention.label} ${selectedIntention.emoji}\nMy brew: ${selectedIntention.recipe.name}\n\nAffirmation: "${selectedIntention.affirmation}"\n\nFind your ritual at whimsitea.com\n— WhimsiTea 🫖`;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.querySelector('.share-btn');
+    const orig = btn.textContent; btn.textContent = 'Copied ✓';
+    setTimeout(()=>btn.textContent=orig,2000);
+  });
 }
 
-// ── Reset ──
-function resetApp() {
-  if (breathTimer) clearInterval(breathTimer);
-  if (steepTimer) clearInterval(steepTimer);
-  currentBrew = null;
-  document.querySelectorAll('.brew-card').forEach(c => c.classList.remove('selected'));
-  document.getElementById('btn-begin').disabled = true;
-  document.getElementById('btn-begin').className = 'btn-main btn-sage';
-  document.querySelectorAll('#breath-dots .bdot').forEach(d => d.classList.remove('done'));
-  goTo('screen-pick');
-}
+document.addEventListener('DOMContentLoaded',()=>{
+  initStars();
+  initIntentions();
+});
+
 </script>
 </body>
 </html>
