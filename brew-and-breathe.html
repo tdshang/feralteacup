@@ -6,7 +6,7 @@
 <title>Brew & Breathe — WhimsiTea</title>
 <meta property="og:title" content="Brew & Breathe — A WhimsiTea Ritual">
 <meta property="og:description" content="A five-act ritual for returning to yourself. Set your intention. Brew your tea. Breathe. Find the magic.">
-<meta property="og:image" content="https://feraldamagereport.netlify.app/tabstrope.png">
+<meta property="og:image" content="https://tdshang.github.io/feralteacup/brew-breathe-preview.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -69,6 +69,8 @@ body{
 
 /* ── Intention grid ── */
 .intention-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
+.intention-grid .intention-card:last-child:nth-child(odd){grid-column:1 / -1;max-width:340px;margin:0 auto;width:100%;}
+
 .intention-card{
   background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
   border-radius:14px;padding:18px 14px;text-align:center;cursor:pointer;
@@ -292,7 +294,7 @@ body{
 
   <div class="glass">
     <p style="font-size:13px;opacity:.6;text-align:center;margin-bottom:14px;font-style:italic;">Choose your steep time</p>
-    <div class="steep-options">
+    <div class="steep-options" id="steep-options">
       <div class="steep-btn" onclick="setSteep(2,this)">2 min<br><span style="font-size:10px;opacity:.6;">delicate</span></div>
       <div class="steep-btn" onclick="setSteep(3,this)">3 min<br><span style="font-size:10px;opacity:.6;">classic</span></div>
       <div class="steep-btn" onclick="setSteep(5,this)">5 min<br><span style="font-size:10px;opacity:.6;">deep</span></div>
@@ -427,7 +429,7 @@ function shareToCommunity(){
 
 function buildShareText(){
   if(!selectedIntention) return '';
-  return 'I just completed a Brew & Breathe ritual with WhimsiTea. ' + String.fromCodePoint(0x2728) + '\n\nMy intention: ' + selectedIntention.label + ' ' + selectedIntention.emoji + '\nMy brew: ' + selectedIntention.recipe.name + '\n\nAffirmation: "' + selectedIntention.affirmation + '"\n\nFind your ritual at tdshang.github.io/feralteacup/brew-and-breathe.html\n\u2014 WhimsiTea ' + String.fromCodePoint(0x1FAD6);
+  return 'I just completed a Brew & Breathe ritual with WhimsiTea. ' + String.fromCodePoint(0x2728) + '\n\nMy intention: ' + selectedIntention.label + ' ' + selectedIntention.emoji + '\nMy brew: ' + selectedIntention.recipe.name + '\n\nAffirmation: "' + selectedIntention.affirmation + '"\n\nFind your ritual at whimsitea.com/brew-and-breathe\n\u2014 WhimsiTea ' + String.fromCodePoint(0x1FAD6);
 }
 
 
@@ -987,6 +989,15 @@ function selectIntention(el,intent){
   updateParticles(intent.id);
   document.querySelectorAll('.intention-card').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
+
+  // Pick random variations for this visit
+  const vars = INTENTION_VARIATIONS[intent.id];
+  if(vars){
+    intent.recipe = vars.recipes[Math.floor(Math.random()*vars.recipes.length)];
+    intent.affirmation = vars.affirmations[Math.floor(Math.random()*vars.affirmations.length)];
+    intent.self_care = vars.self_cares[Math.floor(Math.random()*vars.self_cares.length)];
+  }
+
   selectedIntention = intent;
   document.getElementById('btn-to-brew').disabled = false;
   setGlow(intent.color);
@@ -1458,6 +1469,243 @@ function initStars(){
   window.addEventListener('resize',()=>{ canvas.width=window.innerWidth; canvas.height=window.innerHeight; });
 }
 
+
+
+// Replaces the single recipe/affirmation/self_care in each intention
+// with arrays that rotate randomly on each visit
+
+const INTENTION_VARIATIONS = {
+  rest: {
+    recipes: [
+      {
+        name: "Sleepy Moon Chamomile",
+        subtitle: "A cup made entirely for exhaling",
+        ingredients: ["1 tsp dried chamomile flowers","½ tsp dried lavender buds","¼ tsp lemon balm","1 tsp raw honey","1 cup water at 90°C — just off the boil"],
+        story: "Chamomile has been lulling humans into gentleness for thousands of years. Lavender whispers to your nervous system in a language older than words. This is not a productive cup. This cup has one job: to give you permission to stop."
+      },
+      {
+        name: "Golden Cardamom Milk",
+        subtitle: "Liquid warmth for a tired soul",
+        ingredients: ["1 cup oat milk or whole milk","¼ tsp ground turmeric","¼ tsp ground cardamom","Pinch of cinnamon","Pinch of black pepper","1 tsp honey or maple syrup","Optional: ¼ tsp ashwagandha powder"],
+        story: "Turmeric has been used in Ayurvedic tradition for over 4,000 years as a tonic for the weary body. Cardamom is one of the oldest spices in the world. This cup is ancient knowledge distilled into something you can hold in both hands on a hard day."
+      },
+      {
+        name: "Tart Cherry Twilight",
+        subtitle: "The sleepy girl mocktail, made sacred",
+        ingredients: ["½ cup pure tart cherry juice","1 cup warm water or chamomile tea","1 tsp magnesium glycinate powder (optional)","1 tsp honey","2 slices fresh ginger","Squeeze of lemon"],
+        story: "Tart cherry is one of the few foods with naturally occurring melatonin. Magnesium is what your muscles exhale when they finally let go. This is not just a drink — it is your body being given what it has been quietly asking for."
+      }
+    ],
+    affirmations: [
+      "Rest is not something I earn. It is something I am allowed. I put down what I have been carrying. Just for now.",
+      "I do not have to be productive to deserve this moment. My body knows how to restore itself if I will only let it. I let it.",
+      "Tiredness is not weakness. It is information. My body is telling me something true and I am finally listening."
+    ],
+    self_cares: [
+      "Roll your shoulders back slowly — once, twice, three times. Let them drop as low as they will go. You have been holding tension you forgot was there.",
+      "Unclench your jaw right now. Most people do not realize how long they have been holding it. Take one slow breath with your mouth slightly open. Feel the difference.",
+      "Place both hands flat on your belly. Feel it rise and fall. You have been breathing all day without noticing. Notice it now, just for a moment."
+    ]
+  },
+
+  joy: {
+    recipes: [
+      {
+        name: "Golden Hour Citrus Ginger",
+        subtitle: "Sunshine in a cup, no weather required",
+        ingredients: ["1 tsp green tea or white tea","3 slices fresh ginger","½ tsp dried orange peel","1 tsp honey","Squeeze of fresh lemon","1 cup water at 85°C"],
+        story: "Ginger is one of the most joyful plants alive — it cannot help but warm everything it touches. This cup is not subtle. It announces itself. It is the tea equivalent of throwing open a window and deciding the day is going to be good regardless."
+      },
+      {
+        name: "Pink Lemonade Hibiscus Fizz",
+        subtitle: "For days that deserve something celebratory",
+        ingredients: ["1 tsp dried hibiscus flowers","½ tsp dried rose petals","1 tsp honey","Squeeze of lemon","½ cup sparkling water, added after steeping","Ice optional"],
+        story: "Hibiscus blooms for a single day and gives everything it has. It turns your water the color of something worth celebrating. Adding the sparkling water last is a small moment of delight — watch it bloom. Joy often lives in the small moments we almost skip past."
+      },
+      {
+        name: "Mango Turmeric Sunshine Latte",
+        subtitle: "Bright, warm, completely unreasonable in the best way",
+        ingredients: ["1 cup oat milk","1 tbsp mango puree or mango juice","¼ tsp turmeric","Pinch of cinnamon","1 tsp maple syrup","Optional: tiny pinch of cayenne for warmth"],
+        story: "Mango is considered sacred in Hindu tradition — a symbol of love and prosperity. Turmeric is the color of the sun distilled into a root. This cup is almost offensively cheerful. That is the point. Sometimes joy needs a little help announcing itself."
+      }
+    ],
+    affirmations: [
+      "Joy does not need a reason. I do not need to justify feeling good. Delight is my birthright and I am claiming it right now.",
+      "I am allowed to feel good even when the world is complicated. My joy does not betray anyone. It lights the way.",
+      "Something in me knows how to be happy. I am giving it permission to come forward right now, without apology."
+    ],
+    self_cares: [
+      "Put on one song — just one — that makes you feel something good. Let yourself actually move to it even if just your fingers or your head. Music is physical joy.",
+      "Text one person right now something you genuinely appreciate about them. Do not overthink it. Thirty seconds. Watch what it does to your own mood.",
+      "Step outside for sixty seconds if you can, or open a window. Fresh air is a remarkably underrated form of joy. Take three deliberate breaths of it."
+    ]
+  },
+
+  courage: {
+    recipes: [
+      {
+        name: "Dragon Fire Spiced Chai",
+        subtitle: "For the brave thing you are about to do",
+        ingredients: ["1 tsp black tea","2 cardamom pods, crushed","¼ tsp cinnamon","1 clove","Small piece of fresh ginger","1 cup oat milk, warmed","1 tsp maple syrup"],
+        story: "Every spice in this cup was once considered so precious that wars were fought over it. You are drinking history. You are drinking the distilled boldness of every human who ever crossed an ocean to find something worth finding. This cup does not make you brave. It reminds you that you already are."
+      },
+      {
+        name: "Warrior Cacao Elixir",
+        subtitle: "Dark and strong and completely on your side",
+        ingredients: ["1 tbsp raw cacao powder","1 cup oat milk or almond milk","¼ tsp cinnamon","Pinch of cayenne pepper","1 tsp maple syrup or date syrup","Optional: ¼ tsp maca powder","Pinch of sea salt"],
+        story: "Cacao was used by Aztec warriors before battle — not for aggression, but for clarity and heart-opening. Cayenne moves heat through the body like a reminder that you are alive and capable. Maca has been called the warrior root for centuries. This is not a gentle cup. It asks something of you."
+      },
+      {
+        name: "Ginger Lemon Courage Shot Tea",
+        subtitle: "Sharp, clear, no nonsense",
+        ingredients: ["4-5 slices fresh ginger, peeled","Juice of 1 lemon","1 tsp raw honey","Pinch of cayenne","1 cup hot water","Optional: ½ tsp turmeric"],
+        story: "Some brews are soft. This is not one of them. Ginger and lemon together cut through fog like a decision finally made. This is the cup you make when you are tired of hesitating. It tastes like clarity. It tastes like enough."
+      }
+    ],
+    affirmations: [
+      "Courage is not the absence of fear. It is deciding that what I am moving toward matters more than what I am afraid of. I have done hard things before. I am doing one now.",
+      "I do not need to feel ready. Readiness is a feeling that often arrives after the first step, not before. I take the step.",
+      "Something in me already knows I can do this. It is quieter than my fear but it has been right every single time before."
+    ],
+    self_cares: [
+      "Stand up if you can. Plant your feet flat on the floor. Feel the ground under you. Take three breaths from your belly, not your chest. This is how you arrive in your own body.",
+      "Write down one thing you are afraid of and one reason you are doing it anyway. The second sentence is the truth. The first is just weather.",
+      "Say out loud — even quietly — one true thing about yourself that is strong. Not confident. Strong. You know what it is."
+    ]
+  },
+
+  clarity: {
+    recipes: [
+      {
+        name: "Clear Mind Peppermint Green",
+        subtitle: "For untangling what has gotten knotted",
+        ingredients: ["1 tsp green tea","1 tsp dried peppermint","¼ tsp rosemary (optional — for memory)","½ tsp honey","1 cup water at 80°C — not too hot"],
+        story: "Peppermint cools and clarifies like a window opened in a stuffy room. Green tea carries L-theanine, which steadies the mind without wiring it. This is the cup for sitting with a problem not to solve it but to see it more clearly."
+      },
+      {
+        name: "Rosemary Lemon Brain Tonic",
+        subtitle: "Ancient herb, ancient wisdom, very clear head",
+        ingredients: ["2-3 sprigs fresh rosemary (or 1 tsp dried)","Peel of ½ lemon","1 tsp honey","1 cup hot water","Optional: 1 tsp apple cider vinegar"],
+        story: "Rosemary has been associated with memory and mental clarity since ancient Greece — scholars wore crowns of it during exams. The scent alone has been shown in studies to improve concentration. This cup is not subtle about what it is for. It smells like thinking clearly."
+      },
+      {
+        name: "White Tea & Cardamom Clarity",
+        subtitle: "Gentle, clear, and completely uncluttered",
+        ingredients: ["1 tsp white tea (Silver Needle or White Peony)","2 cardamom pods, lightly crushed","1 tsp honey","½ tsp dried jasmine flowers (optional)","1 cup water at 75°C — white tea needs gentle heat"],
+        story: "White tea is the least processed of all teas — closest to its original form, least interfered with. Cardamom has been used in Ayurvedic practice to clear the mind and open the channels of thought. This cup asks almost nothing of you. It simply offers space."
+      }
+    ],
+    affirmations: [
+      "I do not need to figure out everything right now. I only need to see the next true thing. My mind is capable of finding its way through this.",
+      "Confusion is not failure. It is the feeling of understanding trying to form. I am in the middle of something, not at the end of it.",
+      "My mind is not broken. It is processing something genuinely complex. I give it the space and the quiet it needs to do its work."
+    ],
+    self_cares: [
+      "Write down the three things making your mind the most cluttered right now. Not to solve them — just to move them outside your head. Your brain will thank you.",
+      "Close every tab you do not need right now. On your browser, and in your mind. Name one thing that has your attention that you are giving yourself permission to set down for the next ten minutes.",
+      "Take your cup and move to a different spot than where you usually sit. Even three feet of new perspective can shift something. Clarity often lives just slightly to the left of where we have been looking."
+    ]
+  },
+
+  gratitude: {
+    recipes: [
+      {
+        name: "Rose Hibiscus Heart Tea",
+        subtitle: "For a heart that wants to feel its own fullness",
+        ingredients: ["1 tsp dried hibiscus flowers","½ tsp dried rose petals","¼ tsp cinnamon","1 tsp honey","Squeeze of orange","1 cup hot water"],
+        story: "Hibiscus blooms for a single day. It gives everything it has in one extraordinary moment. Rose has been associated with the heart across every culture that has ever grown one. This cup is made of things that bloomed entirely — and chose to be generous anyway."
+      },
+      {
+        name: "Vanilla Rooibos Gratitude",
+        subtitle: "Warm, unhurried, and completely without caffeine",
+        ingredients: ["1 tsp rooibos tea","½ tsp vanilla extract or ¼ vanilla bean, scraped","1 tsp honey","¼ tsp cardamom","1 cup hot water","Optional: splash of warm oat milk"],
+        story: "Rooibos grows only in one small region of South Africa, in soil unlike anywhere else on earth. The fact that it is in your cup is a minor miracle of geography and trade and human hands. Vanilla was once so rare it was worth more than silver. Gratitude often starts with noticing what is extraordinary about the ordinary."
+      },
+      {
+        name: "Apple Cinnamon Autumn Brew",
+        subtitle: "The taste of abundance",
+        ingredients: ["½ cup warm apple juice or cider","1 cup chamomile or rooibos tea","1 cinnamon stick","2 cloves","1 star anise","1 tsp honey","Slice of apple to garnish (optional)"],
+        story: "Apple has been a symbol of abundance and harvest in cultures around the world for thousands of years. Cinnamon was once traded as currency. This is a cup made of things that were once considered treasure. They are still treasure. We have simply forgotten to notice."
+      }
+    ],
+    affirmations: [
+      "There are things in my life right now that I once hoped for and now have. I let myself feel that. I am grateful without pretending everything is perfect.",
+      "I do not need to manufacture gratitude. I simply need to notice what is already here. It is already here.",
+      "My life contains more than I give it credit for. Not because everything is good, but because some things genuinely are, and those things are real."
+    ],
+    self_cares: [
+      "Think of one person who has made your life better just by existing in it. Hold them in your mind for thirty seconds and let yourself feel the warmth of that.",
+      "Look around the room you are in right now and find three things that someone made — objects that exist because a human put care and skill into creating them. Notice that.",
+      "Write down one thing your body did for you today that you did not thank it for. Even something small. Even just carrying you here."
+    ]
+  },
+
+  release: {
+    recipes: [
+      {
+        name: "Elderflower Letting Go Tea",
+        subtitle: "For the things that have been held long enough",
+        ingredients: ["1 tsp elderflower (dried or cordial)","½ tsp lemon verbena","¼ tsp passionflower (if available)","Juice of half a lemon","1 tsp honey","1 cup hot water"],
+        story: "Elderflower is the scent of late spring — of things that bloomed fully and are now ready to drift. Passionflower has been used for centuries by those who needed to unknot something they had been carrying. This cup does not demand you be fine. It just asks what you might be willing to put down."
+      },
+      {
+        name: "Lemon Balm & Tulsi Unburdening",
+        subtitle: "Gentle, holy, and deeply exhaling",
+        ingredients: ["1 tsp dried lemon balm","½ tsp dried tulsi (holy basil)","¼ tsp dried lavender","1 tsp honey","1 cup hot water — steep covered for 7 minutes"],
+        story: "Tulsi is called the Queen of Herbs in Ayurvedic tradition — an adaptogen that helps the nervous system respond to what it cannot control. Lemon balm has been called the gladdening herb since medieval times. Not because it fixes things. Because it helps you carry them a little more lightly."
+      },
+      {
+        name: "Cooling Mint & Licorice Root",
+        subtitle: "For releasing what has been gripped too tightly",
+        ingredients: ["1 tsp dried peppermint","½ tsp licorice root (or fennel if preferred)","¼ tsp dried chamomile","1 tsp honey","1 cup hot water"],
+        story: "Licorice root is naturally sweet without adding anything — it simply reveals sweetness that was already present. Mint clears the palate, the mind, the moment. This cup is for when you have been clenching something — a thought, a feeling, a story about yourself — and you are ready to open your hand."
+      }
+    ],
+    affirmations: [
+      "I am allowed to release what no longer serves me. Letting go is not giving up. It is making room. I release this gently, with both hands open.",
+      "I do not have to carry this forever to prove it mattered. It mattered. I can put it down now.",
+      "Release does not mean forgetting. It means I am no longer willing to let this live in my body as tension. I choose to set it gently outside myself."
+    ],
+    self_cares: [
+      "Write down one thing you want to release on a small piece of paper. You do not have to do anything dramatic with it. Just the act of writing it outside of yourself is the beginning.",
+      "Take one slow breath in. On the exhale, let your hands open from fists to open palms — even slightly. Your body understands release in ways your mind sometimes does not.",
+      "Name out loud — even just a whisper — one thing you are no longer going to spend energy on today. Just today. That is enough."
+    ]
+  },
+
+  wonder: {
+    recipes: [
+      {
+        name: "Blue Butterfly Pea Wonder Tea",
+        subtitle: "The tea that changes color like actual magic",
+        ingredients: ["1 tsp dried butterfly pea flowers","½ tsp hibiscus","1 tsp honey","Fresh lemon wedge — do not add yet","1 cup hot water","Ice optional"],
+        story: "Brew this tea and it will be deep indigo blue. Add a squeeze of lemon and watch it turn violet, then pink. This is not a trick. This is real chemistry. Magic is usually just wonder we have not explained yet. Sometimes it is wonder we have explained but that still takes our breath away."
+      },
+      {
+        name: "Lavender Earl Grey Stargazer",
+        subtitle: "Bergamot and stars and something unnamed",
+        ingredients: ["1 tsp Earl Grey tea","¼ tsp dried lavender","1 tsp honey","Splash of oat milk","1 cup water at 90°C","Optional: tiny pinch of edible gold shimmer"],
+        story: "Bergamot — the citrus oil in Earl Grey — is named after the city of Bergamo in Italy, where it was first traded. The lavender in your cup grew somewhere in the sun. These two plants, from different places, ended up in the same cup, in your hands, on this specific day. That is already a kind of wonder."
+      },
+      {
+        name: "Forest Floor Mushroom Cacao",
+        subtitle: "Earthy, grounding, quietly extraordinary",
+        ingredients: ["1 tbsp raw cacao powder","½ tsp lion's mane mushroom powder","½ tsp reishi mushroom powder","1 cup oat milk, warmed","1 tsp maple syrup","¼ tsp vanilla","Pinch of cinnamon"],
+        story: "Lion's mane mushroom grows on old trees and has been shown to stimulate nerve growth factor in the brain. Reishi has been called the mushroom of immortality in Chinese medicine for over 2,000 years. You are about to drink something that has been considered magical by human beings for millennia. They were not wrong."
+      }
+    ],
+    affirmations: [
+      "The world is strange and extraordinary and I am paying attention. Wonder is not childish. It is the most sophisticated response to being alive.",
+      "I live on a spinning rock hurtling through infinite space, drinking a cup made of dried plants and hot water, and calling it ordinary. Nothing about this is ordinary.",
+      "There is more beauty available to me right now than I can possibly take in. I open myself to just a little more of it than usual."
+    ],
+    self_cares: [
+      "Find one small thing near you right now and look at it for thirty seconds longer than you normally would. Really look. Most beautiful things only reveal themselves to patience.",
+      "Look up. Whether it is a ceiling or a sky, look at it for fifteen seconds. We spend almost no time looking up. The world looks completely different from that angle.",
+      "Pick up something small and hold it in your palm. Really feel its weight, its texture, its temperature. You are in contact with something that exists. That is not nothing."
+    ]
+  }
+};
 
 </script>
 </body>
